@@ -23,7 +23,7 @@ public class UserClient {
     }
 
     public boolean validateUser(Long userId) {
-        String url = userServiceUrl + "/users/validate/" + userId;
+        String url = userServiceUrl + "/api/users/validate/" + userId;
         log.info("Validating user with ID: {}", userId);
         try {
             ResponseEntity<Boolean> response = restTemplate.getForEntity(url, Boolean.class);
