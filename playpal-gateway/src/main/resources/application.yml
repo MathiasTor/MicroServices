@@ -1,0 +1,46 @@
+server:
+  port: 8080 # Gateway Service runs on port 8080
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true # Enable dynamic discovery-based routing
+      routes:
+        # Explicit route for Group Service
+        - id: group-service
+          uri: lb://group-service
+          predicates:
+            - Path=/group/**
+        # Explicit route for User Service
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/user/**
+        # Explicit route for Runescape Service
+        - id: runescape-service
+          uri: lb://runescape-service
+          predicates:
+            - Path=/runescape/**
+        # Explicit route for Search Service
+        - id: search-service
+          uri: lb://search-service
+          predicates:
+            - Path=/search/**
+    consul:
+      host: localhost # Address of the Consul agent
+      port: 8500 # Default port for Consul
+      discovery:
+        enabled: true
+        service-name: gateway-service # Register Gateway in Consul
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+
