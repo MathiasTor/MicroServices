@@ -10,5 +10,6 @@ import java.util.Optional;
 public interface PlayPalUserRepository extends JpaRepository<PlayPalUser, Long> {
 
     Optional<PlayPalUser> findByUsername(String username);
+    Optional<PlayPalUser> findByEmail(String email);
 
 }

@@ -2,6 +2,7 @@ package com.example.playpal_user_service.controller;
 
 import com.example.playpal_user_service.model.PlayPalUser;
 
+import com.example.playpal_user_service.model.UserDTO;
 import com.example.playpal_user_service.services.PlayPalUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,14 +55,14 @@ public class PlayPalUserController {
     }
 
     @PostMapping
-    public ResponseEntity<PlayPalUser> createUser(@RequestBody PlayPalUser user) {
+    public ResponseEntity<PlayPalUser> createUser(@RequestBody UserDTO user) {
         return ResponseEntity.ok(playPalUserService.createUser(user));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<PlayPalUser> updateUser(
             @PathVariable Long id,
-            @RequestBody PlayPalUser userDetails
+            @RequestBody UserDTO userDetails
     ) {
         try {
             return ResponseEntity.ok(playPalUserService.updateUser(id, userDetails));
@@ -79,5 +80,24 @@ public class PlayPalUserController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
+    @PostMapping("/login")
+    public ResponseEntity<PlayPalUser> login(@RequestBody UserDTO userDTO) {
+        try {
+            // Authenticate the user
+            PlayPalUser user = playPalUserService.loginUser(userDTO.getUsername(), userDTO.getPassword());
+
+            // Return the user object directly (password excluded)
+            return ResponseEntity.ok(user);
+
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(401).body(null); // Unauthorized response
+        }
+    }
+
+
+
+
 
 }

@@ -1,5 +1,6 @@
 package com.example.playpal_user_service.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,9 @@ public class PlayPalUser {
     @Column(unique = true, nullable = false)
     private String username;
 
+
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(unique = true, nullable = false)
