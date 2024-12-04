@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: gateway-service
+  config:
+    import: "optional:consul:" # Import Consul configuration
   cloud:
     gateway:
       discovery:
@@ -30,12 +32,12 @@ spring:
           uri: lb://search-service
           predicates:
             - Path=/search/**
-    consul:
-      host: localhost # Address of the Consul agent
-      port: 8500 # Default port for Consul
-      discovery:
-        enabled: true
-        service-name: gateway-service # Register Gateway in Consul
+          # Explicit route for communication service
+        - id: communication-service
+          uri: lb://communication-service
+          predicates:
+            - Path=/communication/**
+
 
 management:
   endpoints:
