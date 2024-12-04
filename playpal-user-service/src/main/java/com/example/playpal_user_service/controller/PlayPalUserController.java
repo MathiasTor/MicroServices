@@ -39,7 +39,7 @@ public class PlayPalUserController {
         return ResponseEntity.ok(playPalUserService.getAllUsers());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/specific/{id}")
     public ResponseEntity<PlayPalUser> getUserById(@PathVariable Long id) {
         return playPalUserService.getUserById(id)
                 .map(ResponseEntity::ok)

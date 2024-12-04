@@ -3,6 +3,7 @@ package com.example.playpal_search_service.services;
 
 import com.example.playpal_search_service.clients.UserClient;
 import com.example.playpal_search_service.dtos.SearchPostDTO;
+import com.example.playpal_search_service.dtos.UserDTO;
 import com.example.playpal_search_service.model.SearchPost;
 import com.example.playpal_search_service.repository.SearchRepository;
 import com.example.playpal_search_service.repository.SearchRepository;
@@ -104,6 +105,7 @@ public class SearchServiceImplementation implements SearchService {
         dto.setLive(post.isLive());
         dto.setCreatedAt(post.getCreatedAt());
         dto.setUpdatedAt(post.getUpdatedAt());
+
         return dto;
     }
 

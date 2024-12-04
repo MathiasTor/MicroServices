@@ -18,6 +18,7 @@ public class SearchPost {
     private String title;
     private String description;
     private String tags; // Example: "competitive, raid, casual"
+    private String videoGame; // Example: "Overwatch, Valorant, Apex Legends"
     private boolean live; // true for live searches, false for static posts
     private String creator; // Username or ID of the creator
 

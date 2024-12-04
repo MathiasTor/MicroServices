@@ -1,11 +1,13 @@
 package com.example.playpal_search_service.clients;
 
 
+import com.example.playpal_search_service.dtos.UserDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
@@ -47,4 +49,7 @@ public class UserClient {
             return "Unknown User";
         }
     }
+
+
+
 }
