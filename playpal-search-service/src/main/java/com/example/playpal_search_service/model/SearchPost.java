@@ -14,7 +14,7 @@ public class SearchPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private Long userId;
     private String title;
     private String description;
     private String tags; // Example: "competitive, raid, casual"

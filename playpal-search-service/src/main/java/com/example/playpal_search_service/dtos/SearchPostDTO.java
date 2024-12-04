@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @Data
 public class SearchPostDTO {
     private Long id; // For response only
+    private Long userId; // New field for user validation
     private String title;
     private String description;
     private String tags;

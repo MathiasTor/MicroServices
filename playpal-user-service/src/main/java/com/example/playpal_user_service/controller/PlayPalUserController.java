@@ -3,12 +3,14 @@ package com.example.playpal_user_service.controller;
 import com.example.playpal_user_service.model.PlayPalUser;
 
 import com.example.playpal_user_service.services.PlayPalUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/users")
 public class PlayPalUserController {
@@ -18,6 +20,18 @@ public class PlayPalUserController {
     @Autowired
     public PlayPalUserController(PlayPalUserService playPalUserService) {
         this.playPalUserService = playPalUserService;
+    }
+
+    @GetMapping("/validate/{userId}")
+    public ResponseEntity<Boolean> validateUser(@PathVariable Long userId) {
+        log.info("Validating user with ID: {}", userId);
+        return ResponseEntity.ok(userId % 2 == 0); // Mock: Even IDs are valid
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<String> getUserName(@PathVariable Long userId) {
+        log.info("Fetching user name for ID: {}", userId);
+        return ResponseEntity.ok("User" + userId); // Mock: Return "User{id}"
     }
 
     @GetMapping
@@ -65,4 +79,5 @@ public class PlayPalUserController {
             return ResponseEntity.notFound().build();
         }
     }
+
 }
