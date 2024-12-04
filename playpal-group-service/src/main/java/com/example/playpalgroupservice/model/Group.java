@@ -9,11 +9,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "group")
+@Table(name = "group_table")
 public class Group {
 
     @Id
     @Column(name = "group_id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "group_seq_gen")
     private Long groupID;
 
     @Column(name = "group_name")
