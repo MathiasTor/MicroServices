@@ -51,4 +51,24 @@ public class GroupController {
         return groupService.updateGroup(group);
     }
 
+    @GetMapping("/{groupId}/userIds")
+    public List<Long> getUserIdsForGroup(@PathVariable Long groupId) {
+        return groupService.getUserIdsForGroup(groupId);
+    }
+
+    @PostMapping("/{groupId}/addUser/{userId}")
+    public void addUserToGroup(@PathVariable Long groupId, @PathVariable Long userId) {
+        groupService.addUserToGroup(groupId, userId);
+    }
+
+    @DeleteMapping("/{groupId}/removeUser/{userId}")
+    public void removeUserFromGroup(@PathVariable Long groupId, @PathVariable Long userId) {
+        groupService.removeUserFromGroup(groupId, userId);
+    }
+
+    @GetMapping("/getUserId/{username}")
+    public Long getUserIdByUsername(@PathVariable String username) {
+        return groupService.getUserIdByUsername(username);
+    }
+
 }
