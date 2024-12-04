@@ -8,6 +8,8 @@ import com.example.playpal_search_service.repository.SearchRepository;
 import com.example.playpal_search_service.repository.SearchRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -42,9 +44,20 @@ public class SearchServiceImplementation implements SearchService {
 
     }
 
+
+
     @Override
     public List<SearchPostDTO> getAllPosts() {
         return repository.findAll().stream().map(this::mapToDTO).collect(Collectors.toList());
+    }
+
+    public Page<SearchPostDTO> getAllPostsPageable(Pageable pageable) {
+        return repository.findAll(pageable).map(this::mapToDTO);
+    }
+
+    public List<SearchPostDTO> getPostsByCriteria(String keyword) {
+        List<SearchPost> posts = repository.findByTagsContainingOrTitleContaining(keyword, keyword);
+        return posts.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -93,4 +106,5 @@ public class SearchServiceImplementation implements SearchService {
         dto.setUpdatedAt(post.getUpdatedAt());
         return dto;
     }
+
 }

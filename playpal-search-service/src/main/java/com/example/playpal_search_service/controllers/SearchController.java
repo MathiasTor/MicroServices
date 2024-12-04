@@ -4,6 +4,9 @@ package com.example.playpal_search_service.controllers;
 import com.example.playpal_search_service.dtos.SearchPostDTO;
 import com.example.playpal_search_service.services.SearchService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +34,20 @@ public class SearchController {
     @GetMapping("/posts")
     public List<SearchPostDTO> getAllPosts() {
         return searchService.getAllPosts();
+    }
+
+    @GetMapping("/posts/pageable")
+    public Page<SearchPostDTO> getAllPostsPageable(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return searchService.getAllPostsPageable(pageable);
+    }
+
+    @GetMapping("/posts/keyword")
+    public List<SearchPostDTO> getPostsByKeyword(@RequestParam(required = false) String keyword) {
+        return searchService.getPostsByCriteria(keyword != null ? keyword : "");
     }
 
     @GetMapping("/posts/live")
