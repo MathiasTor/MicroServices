@@ -3,7 +3,6 @@ package no.micro.rs.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import no.micro.rs.dto.UserDTO;
 
 @Getter
 @Setter
@@ -13,12 +12,12 @@ public class RunescapeChar {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Transient
-    private UserDTO user;
+    private long userId;
 
     private String runescapeName;
 
     //Character stats
+    private int total;
     private int attack;
     private int defence;
     private int strength;
@@ -42,5 +41,10 @@ public class RunescapeChar {
     private int runecrafting;
     private int hunter;
     private int construction;
+
+    //Raid kill-count
+    private int toaKC;
+    private int coxKC;
+    private int tobKC;
 
 }
