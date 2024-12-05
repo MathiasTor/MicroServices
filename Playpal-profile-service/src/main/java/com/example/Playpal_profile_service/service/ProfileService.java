@@ -15,8 +15,8 @@ public class ProfileService {
 
     // Create a new profile
     public PlaypalProfile createProfile(PlaypalProfile profile) {
-        Optional<PlaypalProfile> existingProfile = profileRepository.findByUserId(profile.getUserId());
-        if (existingProfile.isPresent()) {
+        PlaypalProfile existingProfile = profileRepository.findByUserId(profile.getUserId()).orElse(null);
+        if (existingProfile != null) {
             throw new RuntimeException("A profile already exists for userId: " + profile.getUserId());
         }
 
@@ -25,8 +25,10 @@ public class ProfileService {
 
     // Update an existing profile
     public PlaypalProfile updateProfile(Long userId, PlaypalProfile updatedProfile) {
-        PlaypalProfile existingProfile = profileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Profile not found for userId: " + userId));
+        PlaypalProfile existingProfile = profileRepository.findByUserId(userId).orElse(null);
+        if (existingProfile == null) {
+            throw new RuntimeException("Profile doesnt exist: " + userId );
+        }
 
         // Update name
         if (updatedProfile.getName() != null && !updatedProfile.getName().isEmpty()) {
