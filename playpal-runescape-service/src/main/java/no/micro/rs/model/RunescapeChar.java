@@ -12,7 +12,7 @@ public class RunescapeChar {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private long userId;
+    private Long userId;
 
     private String runescapeName;
 
