@@ -18,6 +18,7 @@ public class SearchController {
 
     private final SearchService searchService;
 
+
     @PostMapping("/posts")
     public SearchPostDTO createPost(@RequestBody SearchPostDTO postDTO) {
         return searchService.createPost(postDTO);
