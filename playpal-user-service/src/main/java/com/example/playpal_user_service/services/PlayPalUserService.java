@@ -6,6 +6,7 @@ import com.example.playpal_user_service.repository.PlayPalUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.Optional;
 
@@ -107,5 +108,11 @@ public class PlayPalUserService {
         } else {
             throw new RuntimeException("User not found with id " + id);
         }
+    }
+
+    public Long getIdByUsername(String username) {
+        return playPalUserRepository.findByUsername(username)
+                .map(PlayPalUser::getId)
+                .orElse(null);
     }
 }

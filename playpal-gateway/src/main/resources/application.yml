@@ -67,6 +67,13 @@ spring:
             - Path=/communication/**
           filters:
             - StripPrefix=1
+        # Explicit route for Friend Service
+        - id: friend-service
+          uri: lb://friend-service
+          predicates:
+            - Path=/friend/**
+          filters:
+            - StripPrefix=1
 
 management:
   endpoints:

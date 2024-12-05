@@ -47,6 +47,14 @@ public class PlayPalUserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    //Get id by username
+    @GetMapping("/get-id/{username}")
+    public ResponseEntity<Long> getIdByUsername(@PathVariable String username) {
+        return playPalUserService.getUserByUsername(username)
+                .map(user -> ResponseEntity.ok(user.getId()))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/search")
     public ResponseEntity<PlayPalUser> getUserByUsername(@RequestParam String username) {
         return playPalUserService.getUserByUsername(username)
