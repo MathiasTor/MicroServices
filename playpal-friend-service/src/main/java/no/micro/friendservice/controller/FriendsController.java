@@ -9,6 +9,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/friends")
 public class FriendsController {
+
     @Autowired
     private FriendService friendsService;
 
@@ -49,10 +50,22 @@ public class FriendsController {
         return friendsService.getPendingRequests(userId);
     }
 
+    //Get incoming friend requests
+    @GetMapping("/get-incoming-requests/{userId}")
+    public List<Long> getIncomingRequests(@PathVariable Long userId) {
+        return friendsService.getIncomingRequests(userId);
+    }
+
     //Get blocked friends
     @GetMapping("/get-blocked/{userId}")
     public List<Long> getBlockedFriends(@PathVariable Long userId) {
         return friendsService.getBlocked(userId);
+    }
+
+    //accept friend request
+    @PostMapping("/accept-friend-request/{userId}/{friendId}")
+    public void acceptFriendRequest(@PathVariable Long userId, @PathVariable Long friendId) {
+        friendsService.acceptFriendRequest(userId, friendId);
     }
 
 }

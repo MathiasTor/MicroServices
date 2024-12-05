@@ -1,6 +1,7 @@
 import React from "react";
 import TopBar from "./TopBar";
 import "./Homepage.css";
+import BottomBar from "./BottomBar";
 
 const Homepage = () => {
     const handleRunescapeClick = () => {
@@ -20,6 +21,7 @@ const Homepage = () => {
                     </button>
                 </div>
             </div>
+            <BottomBar />
         </div>
     );
 };

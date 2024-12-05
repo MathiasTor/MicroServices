@@ -1,0 +1,59 @@
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+/* Tab Buttons */
+.tabs button {
+    position: relative; /* Required for positioning the badge */
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.tabs button:hover {
+    background-color: #ddd;
+}
+
+.tabs .active-tab {
+    background-color: #007bff;
+    color: white;
+}
+
+.tab-content {
+    margin-top: 20px;
+}
+.add-friend-toggle {
+    font-size: 24px;
+    padding: 5px 10px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.add-friend-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.cancel-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.cancel-button:hover {
+    background-color: darkred;
+}

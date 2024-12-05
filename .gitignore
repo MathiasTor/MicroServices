@@ -28,3 +28,4 @@
 hs_err_pid*
 replay_pid*
 /playpal-frontend/node_modules
+/playpal-friend-service/data
