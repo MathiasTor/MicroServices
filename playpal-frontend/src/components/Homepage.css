@@ -1,0 +1,29 @@
+.homepage-container {
+    max-width: 800px;
+    margin: 50px auto;
+    text-align: center;
+}
+
+.games-list {
+    margin-top: 20px;
+}
+
+.game-button {
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.game-button:hover {
+    background-color: #0056b3;
+}
+
+.game-button:active {
+    background-color: #003f7f;
+}
