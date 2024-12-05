@@ -1,0 +1,49 @@
+.profile-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
+
+.profile-details {
+    margin-bottom: 20px;
+}
+
+.error-text {
+    color: red;
+    font-size: 16px;
+}
+
+.stats-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.runescape-stats, .raids-kc {
+    flex: 1;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.runescape-stats ul {
+    list-style: none;
+    padding: 0;
+}
+
+.runescape-stats li {
+    margin: 5px 0;
+}
+
+.raids-kc p {
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+h2 {
+    color: #007BFF;
+}
