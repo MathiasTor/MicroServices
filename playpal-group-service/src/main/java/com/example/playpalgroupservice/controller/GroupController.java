@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
-@RequestMapping("/group")
+@RequestMapping("/api/group")
 public class GroupController {
 
     private final GroupService groupService;

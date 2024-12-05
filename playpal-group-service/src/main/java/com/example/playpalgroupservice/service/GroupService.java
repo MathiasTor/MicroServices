@@ -1,6 +1,8 @@
 package com.example.playpalgroupservice.service;
 
+import com.example.playpalgroupservice.dto.GroupDTO;
 import com.example.playpalgroupservice.dto.UserDTO;
+import com.example.playpalgroupservice.eventdriven.GroupEventPublisher;
 import com.example.playpalgroupservice.model.Group;
 import com.example.playpalgroupservice.repository.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +19,16 @@ public class GroupService {
 
     private final RestTemplate restTemplate;
     private final GroupRepository groupRepository;
+    private final GroupEventPublisher groupEventPublisher; // Add this dependency
 
     @Value("${user.service.url}")
     private String userServiceUrl; // Base URL of User service (e.g., http://user-service)
 
     @Autowired
-    public GroupService(RestTemplate restTemplate, GroupRepository groupRepository) {
+    public GroupService(RestTemplate restTemplate, GroupRepository groupRepository, GroupEventPublisher groupEventPublisher) {
         this.restTemplate = restTemplate;
         this.groupRepository = groupRepository;
+        this.groupEventPublisher = groupEventPublisher;
     }
 
     public List<Group> getGroups() {
@@ -36,12 +40,19 @@ public class GroupService {
     }
 
     public Group createGroup(Group group) {
-        return groupRepository.save(group);
+        // Save the group to the database
+        Group savedGroup = groupRepository.save(group);
+
+        // Publish the group.created event
+        GroupDTO groupDTO = new GroupDTO();
+        groupDTO.setGroupId(savedGroup.getGroupID());
+        groupDTO.setUserIds(savedGroup.getUserIds());
+        groupEventPublisher.publishGroupCreatedEvent(groupDTO);
+
+        return savedGroup;
     }
 
-    public void deleteGroupById(Long id) {
-        groupRepository.deleteById(id);
-    }
+    public void deleteGroupById(Long id) { groupRepository.deleteById(id);}
 
     public Group updateGroup(Group group) {
         return groupRepository.save(group);

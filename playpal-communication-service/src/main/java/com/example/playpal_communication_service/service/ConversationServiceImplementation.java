@@ -33,6 +33,13 @@ public class ConversationServiceImplementation implements ConversationService {
 
 
     @Override
+    public List<ConversationDTO> getAllConversations() {
+        return conversationRepository.findAll().stream()
+                .map(this::mapToConversationDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<ConversationDTO> getConversationsForUser(Long userId) {
         return conversationRepository.findByParticipantIdsContains(userId).stream()
                 .map(this::mapToConversationDTO)

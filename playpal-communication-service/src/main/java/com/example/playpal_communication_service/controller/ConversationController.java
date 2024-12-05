@@ -20,6 +20,11 @@ public class ConversationController {
         return conversationService.createConversation(participantIds);
     }
 
+    @GetMapping("/all")
+    public List<ConversationDTO> getAllConversations() {
+        return conversationService.getAllConversations();
+    }
+
     @GetMapping("/{userId}")
     public List<ConversationDTO> getConversationsForUser(@PathVariable Long userId) {
         return conversationService.getConversationsForUser(userId);
