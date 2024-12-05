@@ -7,6 +7,9 @@ spring:
   config:
     import: "optional:consul:" # Import Consul configuration
   cloud:
+    consul:
+      discovery:
+        prefer-ip-address: true # Prefer IP address for service discovery
     gateway:
       discovery:
         locator:
@@ -17,32 +20,39 @@ spring:
           uri: lb://group-service
           predicates:
             - Path=/group/**
+          filters:
+            - StripPrefix=1
         # Explicit route for User Service
         - id: user-service
           uri: lb://user-service
           predicates:
             - Path=/user/**
+          filters:
+            - StripPrefix=1
         # Explicit route for Runescape Service
         - id: runescape-service
           uri: lb://runescape-service
           predicates:
             - Path=/runescape/**
+          filters:
+            - StripPrefix=1
         # Explicit route for Search Service
         - id: search-service
           uri: lb://search-service
           predicates:
             - Path=/search/**
-          # Explicit route for communication service
+          filters:
+            - StripPrefix=1
+        # Explicit route for Communication Service
         - id: communication-service
           uri: lb://communication-service
           predicates:
             - Path=/communication/**
-
+          filters:
+            - StripPrefix=1
 
 management:
   endpoints:
     web:
       exposure:
         include: "*"
-
-

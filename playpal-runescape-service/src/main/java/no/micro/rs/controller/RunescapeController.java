@@ -1,11 +1,13 @@
 package no.micro.rs.controller;
 
+import no.micro.rs.model.RunescapeChar;
 import no.micro.rs.service.RunescapeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/runescape")
+@CrossOrigin(origins = "http://localhost:3000")
 public class RunescapeController {
     @Autowired
     private RunescapeService runescapeService;
@@ -26,5 +28,11 @@ public class RunescapeController {
     @PostMapping("/create/{userid}/{runescapeName}")
     public void createRunescapeChar(@PathVariable Long userid, @PathVariable String runescapeName) {
         runescapeService.createRunescapeChar(userid, runescapeName);
+    }
+
+    //Get stats for userid
+    @GetMapping("/get-stats/{userid}")
+    public RunescapeChar getStatsForUser(@PathVariable Long userid) {
+        return runescapeService.getStatsForUser(userid);
     }
 }
