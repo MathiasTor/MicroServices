@@ -2,7 +2,6 @@ package com.example.Playpal_profile_service.service;
 
 import com.example.Playpal_profile_service.model.PlaypalProfile;
 import com.example.Playpal_profile_service.repository.ProfileRepository;
-import com.example.Playpal_profile_service.validate.ValidationCharacters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,13 +25,12 @@ public class ProfileService {
 
         // Update name
         if (updatedProfile.getName() != null && !updatedProfile.getName().isEmpty()) {
-            ValidationCharacters.validateName(updatedProfile.getName());
-            existingProfile.setName(ValidationCharacters.formatName(updatedProfile.getName(), userId));
+
+            existingProfile.setName(updatedProfile.getName());
         }
 
         // Update bio
         if (updatedProfile.getBio() != null) {
-            ValidationCharacters.validateBio(updatedProfile.getBio());
             existingProfile.setBio(updatedProfile.getBio());
         }
 
