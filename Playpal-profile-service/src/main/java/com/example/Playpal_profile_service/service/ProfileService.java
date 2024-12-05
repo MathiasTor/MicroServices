@@ -15,6 +15,11 @@ public class ProfileService {
 
     // Create a new profile
     public PlaypalProfile createProfile(PlaypalProfile profile) {
+        Optional<PlaypalProfile> existingProfile = profileRepository.findByUserId(profile.getUserId());
+        if (existingProfile.isPresent()) {
+            throw new RuntimeException("A profile already exists for userId: " + profile.getUserId());
+        }
+
         return profileRepository.save(profile);
     }
 
