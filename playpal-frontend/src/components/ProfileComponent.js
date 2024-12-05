@@ -23,7 +23,7 @@ const ProfileComponent = () => {
 
         // Fetch user details
         axios
-            .get(`http://localhost:8080/api/users/specific/${userId}`)
+            .get(`http://localhost:8080/user/api/users/specific/${userId}`)
             .then((response) => {
                 setUsername(response.data.username);
                 setEmail(response.data.email);
@@ -35,7 +35,7 @@ const ProfileComponent = () => {
 
         // Fetch RuneScape stats
         axios
-            .get(`http://localhost:8081/api/runescape/get-stats/${userId}`)
+            .get(`http://localhost:8080/runescape/api/runescape/get-stats/${userId}`)
             .then((response) => {
                 setRunescapeStats(response.data);
             })

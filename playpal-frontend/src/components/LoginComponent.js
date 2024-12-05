@@ -36,12 +36,13 @@ const LoginComponent = ({  }) => {
     const onLogin = (username, password) => {
         // Make the login request
         axios
-            .post("http://localhost:8080/api/users/login", {
+            .post("http://localhost:8080/user/api/users/login", {
                 username: username,
                 password: password,
             })
             .then((response) => {
                 console.log(response);
+                console.log(response.status);
 
                 // Check for a successful login
                 if (response.status === 200) {

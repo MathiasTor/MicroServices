@@ -14,6 +14,23 @@ spring:
       discovery:
         locator:
           enabled: true # Enable dynamic discovery-based routing
+      globalcors:
+        cors-configurations:
+          '[/**]': # Apply CORS to all routes
+            allowedOrigins:
+              - "http://localhost:3000" # Add the allowed origin(s) here
+              - "https://your-frontend-domain.com"
+            allowedMethods:
+              - "GET"
+              - "POST"
+              - "PUT"
+              - "DELETE"
+              - "OPTIONS"
+            allowedHeaders:
+              - "*"
+            exposedHeaders:
+              - "*"
+            allowCredentials: true # Allow cookies or credentials
       routes:
         # Explicit route for Group Service
         - id: group-service

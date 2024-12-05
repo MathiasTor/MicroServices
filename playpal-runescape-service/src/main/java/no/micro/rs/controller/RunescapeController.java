@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/runescape")
-@CrossOrigin(origins = "http://localhost:3000")
 public class RunescapeController {
     @Autowired
     private RunescapeService runescapeService;
