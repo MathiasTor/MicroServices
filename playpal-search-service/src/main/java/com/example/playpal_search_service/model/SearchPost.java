@@ -19,9 +19,12 @@ public class SearchPost {
     private String description;
     private String tags; // Example: "competitive, raid, casual"
     private String videoGame; // Example: "Overwatch, Valorant, Apex Legends"
-    private boolean live; // true for live searches, false for static posts
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // Getters and setters (or use Lombok annotations like @Data or @Getter/@Setter)
+    //Live or not section
+    private boolean live; // true for live searches, false for static posts
+    private LocalDateTime liveStartTime; // Time of going live
+
+
 }
