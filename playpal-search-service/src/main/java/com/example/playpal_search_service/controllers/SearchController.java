@@ -27,7 +27,8 @@ public class SearchController {
     @GetMapping("/validate/{userId}")
     public boolean validateUser(@PathVariable Long userId) {
         // Mock logic: Return true for even IDs, false for odd IDs
-        return userId % 2 == 1;
+        //return userId % 2 == 1;
+        return true;
     }
 
 

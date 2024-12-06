@@ -115,4 +115,10 @@ public class PlayPalUserService {
                 .map(PlayPalUser::getId)
                 .orElse(null);
     }
+
+    public String getUserName(Long userId) {
+        PlayPalUser user = playPalUserRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+        return user.getUsername();
+    }
 }

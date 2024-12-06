@@ -30,9 +30,8 @@ public class PlayPalUserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<String> getUserName(@PathVariable Long userId) {
-        log.info("Fetching user name for ID: {}", userId);
-        return ResponseEntity.ok("User" + userId); // Mock: Return "User{id}"
+    public String getUserName(@PathVariable Long userId) {
+        return playPalUserService.getUserName(userId);
     }
 
     @GetMapping
