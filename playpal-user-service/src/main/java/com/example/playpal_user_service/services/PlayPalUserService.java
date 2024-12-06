@@ -1,12 +1,11 @@
 package com.example.playpal_user_service.services;
 
+import com.example.playpal_user_service.eventdriven.ProfileEventPublisher;
 import com.example.playpal_user_service.model.PlayPalUser;
 import com.example.playpal_user_service.model.UserDTO;
 import com.example.playpal_user_service.repository.PlayPalUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,10 +13,12 @@ import java.util.Optional;
 public class PlayPalUserService {
 
     private final PlayPalUserRepository playPalUserRepository;
+    private final ProfileEventPublisher profileEventPublisher;
 
     @Autowired
-    public PlayPalUserService(PlayPalUserRepository playPalUserRepository) {
+    public PlayPalUserService(PlayPalUserRepository playPalUserRepository, ProfileEventPublisher profileEventPublisher) {
         this.playPalUserRepository = playPalUserRepository;
+        this.profileEventPublisher = profileEventPublisher;
     }
 
     public List<PlayPalUser> getAllUsers() {
@@ -56,8 +57,17 @@ public class PlayPalUserService {
         playPalUser.setUsername(user.getUsername());
         playPalUser.setPassword(user.getPassword());
         playPalUser.setEmail(user.getEmail());
+        playPalUserRepository.save(playPalUser);
 
-        return playPalUserRepository.save(playPalUser);
+        playPalUserRepository.findByUsername(playPalUser.getUsername());
+
+
+
+        profileEventPublisher.publishGroupCreatedEvent(playPalUser);
+
+
+
+        return playPalUser;
     }
 
 
