@@ -11,6 +11,15 @@ services:
       - playpal-network
 
 
+  # Friend Service
+  playpal-friend-service:
+    container_name: playpal-friend-service-container
+    image: playpal-friend-service:latest
+    ports:
+      - "3003:3003"
+    networks:
+      - playpal-network
+
 
 
 networks:
