@@ -20,7 +20,14 @@ services:
     networks:
       - playpal-network
 
-
+  # Frontend Service
+  playpal-frontend:
+      container_name: playpal-frontend-container
+      image: playpal-frontend:latest
+      ports:
+        - "80:80"
+      networks:
+        - playpal-network
 
 networks:
   playpal-network:
