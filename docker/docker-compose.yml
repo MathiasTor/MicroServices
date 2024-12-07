@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  # Communication Service
+  playpal-communication-service:
+    container_name: playpal-communication-service-container
+    image: playpal-communication-service:latest
+    ports:
+      - "3002:3002"
+    networks:
+      - playpal-network
+
+
+
+
+networks:
+  playpal-network:
+    driver: bridge
+
