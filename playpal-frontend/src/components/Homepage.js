@@ -2,11 +2,13 @@ import React from "react";
 import TopBar from "./TopBar";
 import "./Homepage.css";
 import BottomBar from "./BottomBar";
+import {useNavigate} from "react-router-dom";
+
 
 const Homepage = () => {
+    const navigate = useNavigate();
     const handleRunescapeClick = () => {
-        // Navigate to Runescape or perform an action
-        console.log("Runescape button clicked!");
+        navigate("/posts");
     };
 
     return (

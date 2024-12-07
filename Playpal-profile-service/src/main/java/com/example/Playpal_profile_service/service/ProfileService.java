@@ -20,6 +20,12 @@ public class ProfileService {
             throw new RuntimeException("A profile already exists for userId: " + profile.getUserId());
         }
 
+        if (profile.getName() != null) {
+            profile.setName(profile.getName() + "#" + profile.getUserId());
+        } else {
+            throw new RuntimeException("Name cannot be null");
+        }
+
         return profileRepository.save(profile);
     }
 

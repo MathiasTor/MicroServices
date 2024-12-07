@@ -3,9 +3,7 @@ package com.example.playpal_search_service.services;
 
 import com.example.playpal_search_service.clients.UserClient;
 import com.example.playpal_search_service.dtos.SearchPostDTO;
-import com.example.playpal_search_service.dtos.UserDTO;
 import com.example.playpal_search_service.model.SearchPost;
-import com.example.playpal_search_service.repository.SearchRepository;
 import com.example.playpal_search_service.repository.SearchRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,12 +25,6 @@ public class SearchServiceImplementation implements SearchService {
 
     @Override
     public SearchPostDTO createPost(SearchPostDTO postDTO) {
-        // Validate User
-        boolean userValid = userClient.validateUser(postDTO.getUserId());
-        if (!userValid) {
-            throw new RuntimeException("Invalid user ID: " + postDTO.getUserId());
-        }
-
         SearchPost post = mapToEntity(postDTO);
         post.setCreatedAt(LocalDateTime.now());
         post.setUpdatedAt(LocalDateTime.now());
@@ -108,5 +100,4 @@ public class SearchServiceImplementation implements SearchService {
 
         return dto;
     }
-
 }

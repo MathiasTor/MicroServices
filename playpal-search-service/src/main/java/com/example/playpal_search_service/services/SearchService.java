@@ -12,6 +12,7 @@ public interface SearchService {
     List<SearchPostDTO> getPostsByLiveStatus(boolean live);
     List<SearchPostDTO> getPostsByCriteria(String keyword);
     SearchPostDTO updatePost(Long id, SearchPostDTO postDTO);
+
     void deletePost(Long id);
 
     // Add pageable method
