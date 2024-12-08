@@ -2,30 +2,23 @@ version: "3.8"
 
 services:
 
-  # Profile Service
-  playpal-profile-service:
-    container_name: playpal-profile-service-container
-    image: playpal-profile-service:latest
-    ports:
-      - "3001:3001"
-    networks:
-      - playpal-network
-
-
   # Communication Service
   playpal-communication-service:
     container_name: playpal-communication-service-container
-    image: playpal-communication-service:latest
+    build:
+      context: ../playpal-communication-service
+      dockerfile: Dockerfile
     ports:
       - "3002:3002"
     networks:
       - playpal-network
 
-
   # Friend Service
   playpal-friend-service:
     container_name: playpal-friend-service-container
-    image: playpal-friend-service:latest
+    build:
+      context: ../playpal-friend-service
+      dockerfile: Dockerfile
     ports:
       - "3003:3003"
     networks:
@@ -33,28 +26,23 @@ services:
 
   # Frontend Service
   playpal-frontend:
-      container_name: playpal-frontend-container
-      image: playpal-frontend:latest
-      ports:
-        - "80:80"
-      networks:
-        - playpal-network
+    container_name: playpal-frontend-container
+    build:
+      context: ../playpal-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    networks:
+      - playpal-network
 
   # Gateway
   playpal-gateway:
     container_name: playpal-gateway-container
-    image: playpal-gateway:latest
+    build:
+      context: ../playpal-gateway
+      dockerfile: Dockerfile
     ports:
       - "3004:3004"
-    networks:
-      - playpal-network
-
-  # Group Service
-  playpal-group-service:
-    container_name: playpal-group-service-container
-    image: playpal-group-service:latest
-    ports:
-      - "3005:3005"
     networks:
       - playpal-network
 
@@ -62,7 +50,9 @@ services:
   # Recorder
   playpal-recorder:
     container_name: playpal-recorder-container
-    image: playpal-recorder:latest
+    build:
+      context: ../playpal-recorder
+      dockerfile: Dockerfile
     ports:
       - "3006:3006"
     networks:
@@ -71,4 +61,3 @@ services:
 networks:
   playpal-network:
     driver: bridge
-
