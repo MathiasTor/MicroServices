@@ -1,6 +1,17 @@
 version: "3.8"
 
 services:
+
+  # Profile Service
+  playpal-profile-service:
+    container_name: playpal-profile-service-container
+    image: playpal-profile-service:latest
+    ports:
+      - "3001:3001"
+    networks:
+      - playpal-network
+
+
   # Communication Service
   playpal-communication-service:
     container_name: playpal-communication-service-container
