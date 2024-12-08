@@ -59,6 +59,15 @@ services:
       - playpal-network
 
 
+  # Recorder
+  playpal-recorder:
+    container_name: playpal-recorder-container
+    image: playpal-recorder:latest
+    ports:
+      - "3006:3006"
+    networks:
+      - playpal-network
+
 networks:
   playpal-network:
     driver: bridge
