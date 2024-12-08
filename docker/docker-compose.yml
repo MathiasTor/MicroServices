@@ -38,6 +38,16 @@ services:
     networks:
       - playpal-network
 
+  # Group Service
+  playpal-group-service:
+    container_name: playpal-group-service-container
+    image: playpal-group-service:latest
+    ports:
+      - "3005:3005"
+    networks:
+      - playpal-network
+
+
 networks:
   playpal-network:
     driver: bridge
