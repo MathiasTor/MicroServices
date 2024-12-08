@@ -29,6 +29,15 @@ services:
       networks:
         - playpal-network
 
+  # Gateway
+  playpal-gateway:
+    container_name: playpal-gateway-container
+    image: playpal-gateway:latest
+    ports:
+      - "3004:3004"
+    networks:
+      - playpal-network
+
 networks:
   playpal-network:
     driver: bridge
