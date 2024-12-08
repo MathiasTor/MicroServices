@@ -9,7 +9,7 @@ services:
       context: ../playpal-communication-service
       dockerfile: Dockerfile
     ports:
-      - "3002:3002"
+      - "8085:8085"
     networks:
       - playpal-network
 
@@ -42,10 +42,20 @@ services:
       context: ../playpal-gateway
       dockerfile: Dockerfile
     ports:
-      - "3004:3004"
+      - "8080:8080"
     networks:
       - playpal-network
 
+  # Group Service
+  playpal-group-service:
+    container_name: playpal-group-service-container
+    build:
+      context: ../playpal-group-service
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    networks:
+      - playpal-network
 
   # Recorder
   playpal-recorder:
@@ -54,7 +64,7 @@ services:
       context: ../playpal-recorder
       dockerfile: Dockerfile
     ports:
-      - "3006:3006"
+      - "8088:8088"
     networks:
       - playpal-network
 
