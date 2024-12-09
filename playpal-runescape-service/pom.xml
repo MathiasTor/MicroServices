@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>no.micro</groupId>
-	<artifactId>Runescape-service</artifactId>
+	<artifactId>playpal-runescape-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Runescape-service</name>
+	<name>playpal-runescape-service</name>
 	<description>Service for runescape related data</description>
 	<url/>
 	<licenses>
