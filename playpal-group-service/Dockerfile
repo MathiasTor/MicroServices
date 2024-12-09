@@ -4,6 +4,6 @@ WORKDIR /app
 
 COPY target/playpal-group-service-0.0.1-SNAPSHOT.jar group.jar
 
-EXPOSE 8082
+EXPOSE 8090
 
 ENTRYPOINT ["java", "-jar", "group.jar"]

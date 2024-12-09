@@ -20,7 +20,7 @@ services:
       context: ../playpal-friend-service
       dockerfile: Dockerfile
     ports:
-      - "3003:3003"
+      - "8086:8086"
     networks:
       - playpal-network
 
@@ -53,7 +53,18 @@ services:
       context: ../playpal-group-service
       dockerfile: Dockerfile
     ports:
-      - "8082:8082"
+      - "8090:8090"
+    networks:
+      - playpal-network
+
+  # Profile Service
+  playpal-profile-service:
+    container_name: playpal-profile-service-container
+    build:
+      context: ../Playpal-profile-service
+      dockerfile: Dockerfile
+    ports:
+      - "8087:8087"
     networks:
       - playpal-network
 
@@ -65,6 +76,18 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8088:8088"
+    networks:
+      - playpal-network
+
+
+  # Runescape Service
+  playpal-runescape-service:
+    container_name: playpal-runescape-service-container
+    build:
+      context: ../playpal-runescape-service
+      dockerfile: Dockerfile
+    ports:
+      - "8089:8089"
     networks:
       - playpal-network
 
