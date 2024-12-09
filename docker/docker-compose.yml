@@ -91,6 +91,18 @@ services:
     networks:
       - playpal-network
 
+  # User Service
+  playpal-user-service:
+    container_name: playpal-user-service-container
+    build:
+      context: ../playpal-user-service
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
+    networks:
+      - playpal-network
+
+
 networks:
   playpal-network:
     driver: bridge
