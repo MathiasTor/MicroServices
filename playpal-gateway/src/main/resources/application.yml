@@ -73,6 +73,14 @@ spring:
             - Path=/friend/**
           filters:
             - StripPrefix=1
+        # Explicit route for Profile Service
+        - id: profile-service
+          uri: lb://profile-service
+          predicates:
+            - Path=/profile/**
+          filters:
+            - StripPrefix=1
+
 
 management:
   endpoints:
