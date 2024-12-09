@@ -22,4 +22,6 @@ public class GroupEventPublisher {
         log.info("Publishing group.created event: {}", groupDTO);
         amqpTemplate.convertAndSend(exchangeName, "group.created", groupDTO);
     }
+
+
 }
