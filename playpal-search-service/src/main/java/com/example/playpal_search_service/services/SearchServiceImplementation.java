@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -34,7 +35,6 @@ public class SearchServiceImplementation implements SearchService {
         String userId = userClient.getUserName(postDTO.getUserId());
         log.info("Search post created by user: {}", userId);
         return mapToDTO(post);
-
     }
 
 
@@ -100,4 +100,72 @@ public class SearchServiceImplementation implements SearchService {
 
         return dto;
     }
+
+    @Override
+    public void stopPost(Long id) {
+        repository.findById(id).ifPresent(post -> {
+            post.setLive(false);
+            repository.save(post);
+        });
+    }
+
+    @Override
+    public void applyToPost(Long postId, Long userId) {
+        Optional<SearchPost> post = repository.findById(postId);
+
+        if (post.isPresent()) {
+            SearchPost searchPost = post.get();
+            List<Long> appliedUsers = searchPost.getAppliedUsers();
+            if (!appliedUsers.contains(userId)) {
+                appliedUsers.add(userId);
+                searchPost.setAppliedUsers(appliedUsers);
+                repository.save(searchPost);
+            }
+        }
+    }
+
+    @Override
+    public void approveUser(Long postId, Long userId) {
+        Optional<SearchPost> post = repository.findById(postId);
+
+        if (post.isPresent()) {
+            SearchPost searchPost = post.get();
+            List<Long> approvedUsers = searchPost.getApprovedUsers();
+
+            searchPost.getAppliedUsers().remove(userId);
+
+            if(approvedUsers.contains(userId)) {
+            }else{
+                approvedUsers.add(userId);
+                searchPost.setApprovedUsers(approvedUsers);
+            }
+
+            repository.save(searchPost);
+
+        }
+    }
+
+    @Override
+    public void disapproveUser(Long postId, Long userId) {
+        Optional<SearchPost> post = repository.findById(postId);
+
+        if (post.isPresent()) {
+            SearchPost searchPost = post.get();
+            searchPost.getAppliedUsers().remove(userId);
+            repository.save(searchPost);
+        }
+    }
+
+    @Override
+    public List<Long> getApplicants(Long postId) {
+        Optional<SearchPost> post = repository.findById(postId);
+        return post.map(SearchPost::getAppliedUsers).orElse(null);
+    }
+
+    @Override
+    public List<Long> getApprovedUsers(Long postId) {
+        Optional<SearchPost> post = repository.findById(postId);
+        return post.map(SearchPost::getApprovedUsers).orElse(null);
+    }
+
 }

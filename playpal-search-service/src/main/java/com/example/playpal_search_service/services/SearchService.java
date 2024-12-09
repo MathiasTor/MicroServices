@@ -17,4 +17,16 @@ public interface SearchService {
 
     // Add pageable method
     Page<SearchPostDTO> getAllPostsPageable(Pageable pageable);
+
+    void stopPost(Long id);
+
+    void applyToPost(Long postId, Long userId);
+
+    void approveUser(Long postId, Long userId);
+
+    void disapproveUser(Long postId, Long userId);
+
+    List<Long> getApplicants(Long postId);
+
+    List<Long> getApprovedUsers(Long postId);
 }
