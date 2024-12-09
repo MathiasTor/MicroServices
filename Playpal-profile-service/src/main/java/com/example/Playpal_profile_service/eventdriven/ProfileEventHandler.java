@@ -15,8 +15,7 @@ public class ProfileEventHandler {
 
     private final ProfileService profileService;
 
-    //todo: This is not supposed to be here.. Need to ask who made this? We create queue publish, but who wants to listen to this?
-    /*
+
     @RabbitListener(queues = "${amqp.queue.created.name}")
     public void handleGroupCreatedEvent(ProfileDTO profileDTO) {
         log.info("Received profile.created event: {}", profileDTO);
@@ -28,7 +27,7 @@ public class ProfileEventHandler {
         profileService.createProfile(playpalProfile);
     }
 
-     */
+
 
     // Converter method
     private PlaypalProfile convertToPlaypalProfile(ProfileDTO profileDTO) {
