@@ -31,8 +31,6 @@ public class SearchController {
         return true;
     }
 
-
-
     @GetMapping("/posts")
     public List<SearchPostDTO> getAllPosts() {
         return searchService.getAllPosts();
@@ -65,5 +63,41 @@ public class SearchController {
     @DeleteMapping("/posts/{id}")
     public void deletePost(@PathVariable Long id) {
         searchService.deletePost(id);
+    }
+
+    //Set post inactive
+    @PostMapping("/stop/{id}")
+    public void stopPost(@PathVariable Long id) {
+        searchService.stopPost(id);
+    }
+
+    //Apply to post
+    @PostMapping("/apply/{postId}/{userId}")
+    public void applyToPost(@PathVariable Long postId, @PathVariable Long userId) {
+        searchService.applyToPost(postId, userId);
+    }
+
+    //Approve user
+    @PostMapping("/approve/{postId}/{userId}")
+    public void approveUser(@PathVariable Long postId, @PathVariable Long userId) {
+        searchService.approveUser(postId, userId);
+    }
+
+    //Disapprove user
+    @PostMapping("/disapprove/{postId}/{userId}")
+    public void disapproveUser(@PathVariable Long postId, @PathVariable Long userId) {
+        searchService.disapproveUser(postId, userId);
+    }
+
+    //Get applicants for post
+    @GetMapping("/applicants/{postId}")
+    public List<Long> getApplicants(@PathVariable Long postId) {
+        return searchService.getApplicants(postId);
+    }
+
+    //Get approved users for post
+    @GetMapping("/approved/{postId}")
+    public List<Long> getApprovedUsers(@PathVariable Long postId) {
+        return searchService.getApprovedUsers(postId);
     }
 }

@@ -2,6 +2,7 @@ package com.example.playpal_search_service.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,11 +15,13 @@ public class SearchPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private Long userId;
     private String title;
     private String description;
     private String tags; // Example: "competitive, raid, casual"
     private String videoGame; // Example: "Overwatch, Valorant, Apex Legends"
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -26,5 +29,11 @@ public class SearchPost {
     private boolean live; // true for live searches, false for static posts
     private LocalDateTime liveStartTime; // Time of going live
 
+
+    @ElementCollection
+    private List<Long> appliedUsers;
+
+    @ElementCollection
+    private List<Long> approvedUsers;
 
 }
