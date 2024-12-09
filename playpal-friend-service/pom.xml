@@ -10,9 +10,9 @@
 		<relativePath/>
 	</parent>
 	<groupId>no.micro</groupId>
-	<artifactId>friendservice</artifactId>
+	<artifactId>playpal-friend-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>friendservice</name>
+	<name>playpal-friend-service</name>
 	<description>Service for handling friends and blocked users</description>
 
 	<properties>
