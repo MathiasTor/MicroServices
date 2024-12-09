@@ -9,6 +9,7 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    height: 5%;
 }
 
 .friends-toggle-button {
@@ -21,9 +22,47 @@
     font-size: 16px;
     cursor: pointer;
     margin-right: 20px;
+    margin-bottom: 3%;
+}
+.friends-toggle-button{
+    position: relative;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 20px;
+    margin-bottom: 3%;
 }
 
-.friends-toggle-button:hover {
+.chat-toggle-button{
+    position: relative;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 20px;
+    margin-bottom: 3%;
+}
+.group-toggle-button{
+    position: relative;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 20px;
+    margin-bottom: 3%;
+}
+
+.friends-toggle-button:hover .group-toggle-button .chat-toggle-button {
     background-color: #0056b3;
 }
 

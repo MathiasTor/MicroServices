@@ -16,7 +16,8 @@ const TopBar = () => {
     }
 
     function HandleProfile() {
-        navigate("/profile");
+        const id = cookies.get("userid");
+        navigate(`/profile/${id}`);
     }
 
     function HandleHome() {

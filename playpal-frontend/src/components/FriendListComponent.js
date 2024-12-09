@@ -118,6 +118,10 @@ const FriendsListComponent = () => {
         }
     };
 
+    function chatFriend(friend) {
+        //TODO: Implement chat functionality
+    }
+
     const renderTabContent = () => {
         switch (activeTab) {
             case "friends":
@@ -127,14 +131,22 @@ const FriendsListComponent = () => {
                         {friends.length > 0 ? (
                             <ul>
                                 {friends.map((friend, index) => (
-                                    <li key={index}>
+                                    <li key={index} className="friend-item">
                                         {friend}{" "}
-                                        <button
-                                            onClick={() => removeFriend(friend)}
-                                            className="remove-friend-button"
-                                        >
-                                            Remove
-                                        </button>
+                                        <div className="friend-actions">
+                                            <button
+                                                onClick={() => chatFriend(friend)}
+                                                className="chat-friend-button"
+                                            >
+                                                Chat
+                                            </button>
+                                            <button
+                                                onClick={() => removeFriend(friend)}
+                                                className="remove-friend-button"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
                                     </li>
                                 ))}
                             </ul>

@@ -9,6 +9,7 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    margin-bottom: 10%;
 }
 
 button {
@@ -88,6 +89,17 @@ textarea {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.live-indicator {
+    position: relative;
+    top: 10px;
+    left: 90%;
+    width: 60px;
+    height: 60px;
+    background-color: green;
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(40, 167, 69, 0.5);
+}
+
 .post h4 {
     margin: 0 0 10px 0;
 }
@@ -120,3 +132,84 @@ textarea {
 .pagination button:hover {
     background-color: #0056b3;
 }
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stop-search-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.stop-search-button:hover {
+    background-color: #d32f2f;
+}
+.apply-button,
+.approve-button,
+.disapprove-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.apply-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.apply-button:hover {
+    background-color: #0056b3;
+}
+
+.approve-button {
+    background-color: #28a745;
+    color: white;
+}
+
+.approve-button:hover {
+    background-color: #218838;
+}
+
+.disapprove-button {
+    background-color: #dc3545;
+    color: white;
+}
+
+.disapprove-button:hover {
+    background-color: #c82333;
+}
+
+.applicants-section {
+    margin-top: 10px;
+}
+
+.applicant {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+.approved-users-section {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.approved-user {
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333;
+}
+

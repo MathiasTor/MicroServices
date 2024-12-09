@@ -1,55 +1,93 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
 import TopBar from "./TopBar";
 import "./ProfileComponent.css";
+import BottomBar from "./BottomBar";
 
 const ProfileComponent = () => {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [runescapeStats, setRunescapeStats] = useState(null);
     const [error, setError] = useState("");
+    const [isOwnProfile, setIsOwnProfile] = useState(false);
+    const [linked, setLinked] = useState(false);
+    const [runescapeUsername, setRunescapeUsername] = useState("");
     const navigate = useNavigate();
+    const { userId } = useParams();
 
     useEffect(() => {
-        const userId = Cookies.get("userid");
+        const loggedInUserId = Cookies.get("userid");
 
-        if (!userId) {
+        if (!loggedInUserId) {
             setError("User is not logged in.");
-            navigate("/login"); // Redirect to login if not logged in
+            navigate("/login");
             return;
         }
 
-        // Fetch user details
+        // Determine if viewing own profile
+        const viewingOwnProfile = loggedInUserId === userId;
+        setIsOwnProfile(viewingOwnProfile);
+
+        // Fetch profile data (same endpoint)
         axios
             .get(`http://localhost:8080/user/api/users/specific/${userId}`)
             .then((response) => {
                 setUsername(response.data.username);
-                setEmail(response.data.email);
+                if (viewingOwnProfile) {
+                    setEmail(response.data.email); // Only set email if viewing own profile
+                }
             })
             .catch((error) => {
                 console.error("Error fetching user details:", error);
                 setError("Failed to fetch user details.");
             });
 
-        // Fetch RuneScape stats
+        // Fetch RuneScape account link status and stats
         axios
-            .get(`http://localhost:8080/runescape/api/runescape/get-stats/${userId}`)
+            .get(`http://localhost:8080/runescape/api/runescape/is-linked/${userId}`)
             .then((response) => {
-                setRunescapeStats(response.data);
+                setLinked(response.data);
+                if (response.data) {
+                    axios
+                        .get(`http://localhost:8080/runescape/api/runescape/get-stats/${userId}`)
+                        .then((statsResponse) => {
+                            setRunescapeStats(statsResponse.data);
+                        })
+                        .catch((statsError) => {
+                            console.error("Error fetching RuneScape stats:", statsError);
+                            setError("Failed to fetch RuneScape stats.");
+                        });
+                }
+            })
+            .catch((linkError) => {
+                console.error("Error checking RuneScape link status:", linkError);
+                setError("Failed to check RuneScape link status.");
+            });
+    }, [navigate, userId]);
+
+    const handleLinkRunescape = () => {
+        const loggedInUserId = Cookies.get("userid");
+        axios
+            .post(`http://localhost:8080/runescape/api/runescape/create/${loggedInUserId}/${runescapeUsername}`)
+            .then(() => {
+                setLinked(true);
+                setError("");
             })
             .catch((error) => {
-                console.error("Error fetching RuneScape stats:", error);
-                setError("Failed to fetch RuneScape stats.");
+                console.error("Error linking RuneScape account:", error);
+                setError("Failed to link RuneScape account.");
             });
-    }, [navigate]);
+
+        window.location.reload();
+    };
 
     return (
         <div>
             <TopBar />
             <div className="profile-container">
-                <h1>Profile</h1>
+                <h1>{isOwnProfile ? "Your profile" : `${username}'s profile`}</h1>
                 {error ? (
                     <p className="error-text">{error}</p>
                 ) : (
@@ -58,10 +96,24 @@ const ProfileComponent = () => {
                             <p>
                                 <strong>Username:</strong> {username}
                             </p>
-                            <p>
-                                <strong>Email:</strong> {email}
-                            </p>
+                            {isOwnProfile && (
+                                <p>
+                                    <strong>Email:</strong> {email}
+                                </p>
+                            )}
                         </div>
+                        {isOwnProfile && !linked && (
+                            <div className="link-runescape">
+                                <h2>Link RuneScape Account</h2>
+                                <input
+                                    type="text"
+                                    placeholder="RuneScape Username"
+                                    value={runescapeUsername}
+                                    onChange={(e) => setRunescapeUsername(e.target.value)}
+                                />
+                                <button onClick={handleLinkRunescape}>Link Account</button>
+                            </div>
+                        )}
                         {runescapeStats && (
                             <div className="stats-container">
                                 <div className="runescape-stats">
@@ -109,6 +161,7 @@ const ProfileComponent = () => {
                     </>
                 )}
             </div>
+            <BottomBar />
         </div>
     );
 };

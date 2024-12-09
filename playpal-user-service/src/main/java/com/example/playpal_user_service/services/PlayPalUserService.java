@@ -127,8 +127,8 @@ public class PlayPalUserService {
     }
 
     public String getUserName(Long userId) {
-        PlayPalUser user = playPalUserRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
-        return user.getUsername();
+        Optional<PlayPalUser> user = playPalUserRepository.findById(userId);
+        System.out.println(userId);
+        return user.map(PlayPalUser::getUsername).orElse(null);
     }
 }

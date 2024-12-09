@@ -97,4 +97,7 @@ public class GroupService {
     }
 
 
+    public List<Group> getGroupsForUser(Long userId) {
+        return groupRepository.findAllByUserIdsContains(userId);
+    }
 }

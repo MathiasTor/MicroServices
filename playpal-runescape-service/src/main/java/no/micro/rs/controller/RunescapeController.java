@@ -1,10 +1,12 @@
 package no.micro.rs.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import no.micro.rs.model.RunescapeChar;
 import no.micro.rs.service.RunescapeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/runescape")
 public class RunescapeController {
@@ -20,6 +22,7 @@ public class RunescapeController {
     //Link user to runescape character
     @PostMapping("/link-user/{userid}/{runescapeName}")
     public void linkUserToRSChar(@PathVariable Long userid, @PathVariable String runescapeName) {
+        log.info("Linking user to runescape character " + runescapeName + " for user " + userid);
         runescapeService.linkUserToRSChar(userid, runescapeName);
     }
 
@@ -33,5 +36,11 @@ public class RunescapeController {
     @GetMapping("/get-stats/{userid}")
     public RunescapeChar getStatsForUser(@PathVariable Long userid) {
         return runescapeService.getStatsForUser(userid);
+    }
+
+    //Check if user has linked runescape character
+    @GetMapping("/is-linked/{userid}")
+    public boolean isLinked(@PathVariable Long userid) {
+        return runescapeService.isLinked(userid);
     }
 }

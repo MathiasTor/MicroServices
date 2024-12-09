@@ -256,4 +256,8 @@ public class RunescapeService {
             return null;
         }
     }
+
+    public boolean isLinked(Long userid) {
+        return runescapeRepository.findByUserId(userid) != null;
+    }
 }
