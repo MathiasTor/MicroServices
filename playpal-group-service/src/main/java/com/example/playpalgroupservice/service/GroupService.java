@@ -45,11 +45,14 @@ public class GroupService {
         // Save the group to the database
         Group savedGroup = groupRepository.save(group);
 
+
         // Publish the group.created event
         GroupDTO groupDTO = new GroupDTO();
         groupDTO.setGroupId(savedGroup.getGroupID());
+
         groupDTO.setGroupName(savedGroup.getGroupName());
-        groupDTO.setUserIds(savedGroup.getUserIds());
+        groupDTO.setUserIds(group.getUserIds());
+
         groupEventPublisher.publishGroupCreatedEvent(groupDTO);
 
         log.info("Publishing GroupDTO to RabbitMQ: {}", groupDTO);

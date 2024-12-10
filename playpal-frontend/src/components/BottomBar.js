@@ -39,7 +39,6 @@ const BottomBar = () => {
             <button className="friends-toggle-button" onClick={toggleFriendsVisibility}>
                 Friends {incomingRequests > 0 && <span className="notification-badge">{incomingRequests}</span>}
             </button>
-            <button className="group-toggle-button">Groups</button>
             {isFriendsVisible && (
                 <div className="friends-list-container">
                     <FriendsListComponent onRequestAccepted={fetchIncomingRequests} />

@@ -20,7 +20,7 @@ public class SearchEventPublisher {
     }
 
     public void publishSearchEndedEvent(SearchEndedEvent event) {
-        log.info("Publishing search.ended event: {}", event);
+        log.info("Publishing search.ended event: {}", event);;
         amqpTemplate.convertAndSend(exchangeName, "search.ended", event);
     }
 

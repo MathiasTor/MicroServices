@@ -25,7 +25,11 @@ public class GroupEventListner {
         Group group = new Group();
         group.setGroupName(event.getTitle());
         group.setGroupDescription(event.getDescription());
-        group.setUserIds(List.of(event.getUserId())); // Add the user who created the search
+
+        List<Long> approvedUsers = event.getApprovedUsers();
+        approvedUsers.add(event.getUserId());
+
+        group.setUserIds(approvedUsers);
 
         groupService.createGroup(group);
     }

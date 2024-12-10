@@ -53,7 +53,7 @@ public class ConversationController {
     public List<MessageDTO> getMessagesInConversation(
             @PathVariable Long conversationId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "1000000") int size
     ) {
         return conversationService.getMessagesInConversation(conversationId, page, size);
     }

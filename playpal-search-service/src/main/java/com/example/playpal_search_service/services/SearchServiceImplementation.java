@@ -110,7 +110,7 @@ public class SearchServiceImplementation implements SearchService {
             post.setLive(false);
             repository.save(post);
             // Create an event payload to send to RabbitMQ
-            SearchEndedEvent event = new SearchEndedEvent(id, post.getUserId(), post.getTitle(), post.getDescription());
+            SearchEndedEvent event = new SearchEndedEvent(id, post.getUserId(), post.getTitle(), post.getDescription(), post.getApprovedUsers());
             searchEventPublisher.publishSearchEndedEvent(event);
         });
     }
