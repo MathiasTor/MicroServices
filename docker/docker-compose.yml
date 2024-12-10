@@ -1,104 +1,164 @@
-version: "3.8"
+version: '3.8'
 
 services:
 
-  # Communication Service
-  playpal-communication-service:
-    container_name: playpal-communication-service-container
-    build:
-      context: ../playpal-communication-service
-      dockerfile: Dockerfile
+  # Consul Service
+  consul:
+    image: hashicorp/consul:1.19.2
+    container_name: consul-container
     ports:
-      - "8085:8085"
+      - "8500:8500"
     networks:
       - playpal-network
+    command: "agent -dev -client=0.0.0.0"
+
+  # Consul Importer Service
+  consul-importer:
+    image: consul-importer:1.19.2
+    container_name: consul-importer-container
+    depends_on:
+      - consul
+    networks:
+      - playpal-network
+
+  # RabbitMQ Service
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-container
+    ports:
+      - "5672:5672"   # AMQP protocol
+      - "15672:15672" # Management console
+    networks:
+      - playpal-network
+
+
+  # Profile Service
+  profile-service:
+    container_name: profile-service-container
+    image: profile-service:1.0
+    ports:
+      - "3001:3001"
+    networks:
+      - playpal-network
+    depends_on:
+      - consul
+      - rabbitmq
+      - user-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONSUL_HOST=consul
+
+  # Communication Service
+  communication-service:
+    container_name: communication-service-container
+    image: communication-service:1.0
+    ports:
+      - "3002:3002"
+    networks:
+      - playpal-network
+    depends_on:
+      - consul
+      - rabbitmq
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONSUL_HOST=consul
 
   # Friend Service
-  playpal-friend-service:
-    container_name: playpal-friend-service-container
-    build:
-      context: ../playpal-friend-service
-      dockerfile: Dockerfile
+  friend-service:
+    container_name: friend-service-container
+    image: friend-service:1.0
     ports:
-      - "8086:8086"
+      - "3003:3003"
     networks:
       - playpal-network
+    depends_on:
+      - consul
+      - rabbitmq
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONSUL_HOST=consul
 
-  # Frontend Service
-  playpal-frontend:
-    container_name: playpal-frontend-container
-    build:
-      context: ../playpal-frontend
-      dockerfile: Dockerfile
+  # Group Service
+  group-service:
+    container_name: group-service-container
+    image: group-service:1.0
     ports:
-      - "80:80"
+      - "3005:3005"
     networks:
       - playpal-network
+    depends_on:
+      - consul
+      - rabbitmq
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONSUL_HOST=consul
 
-  # Gateway
-  playpal-gateway:
-    container_name: playpal-gateway-container
-    build:
-      context: ../playpal-gateway
-      dockerfile: Dockerfile
+  # Runescape Service
+  runescape-service:
+    container_name: runescape-service-container
+    image: runescape-service:1.0
+    ports:
+      - "3006:3006"
+    networks:
+      - playpal-network
+    depends_on:
+      - consul
+      - rabbitmq
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONSUL_HOST=consul
+
+  # Search Service
+  search-service:
+    container_name: search-service-container
+    image: search-service:1.0
+    ports:
+      - "3007:3007"
+    networks:
+      - playpal-network
+    depends_on:
+      - consul
+      - rabbitmq
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONSUL_HOST=consul
+
+  # User Service
+  user-service:
+    container_name: user-service-container
+    image: user-service:1.0
+    ports:
+      - "3008:3008"
+    networks:
+      - playpal-network
+    depends_on:
+      - consul
+      - rabbitmq
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONSUL_HOST=consul
+
+  # Gateway Service
+  gateway:
+    container_name: gateway-container
+    image: gateway:1.0
     ports:
       - "8080:8080"
     networks:
       - playpal-network
+    depends_on:
+      - consul
+      - rabbitmq
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONSUL_HOST=consul
 
-  # Group Service
-  playpal-group-service:
-    container_name: playpal-group-service-container
-    build:
-      context: ../playpal-group-service
-      dockerfile: Dockerfile
+  # Frontend Service
+  frontend:
+    container_name: frontend-container
+    image: frontend:1.0
     ports:
-      - "8090:8090"
-    networks:
-      - playpal-network
-
-  # Profile Service
-  playpal-profile-service:
-    container_name: playpal-profile-service-container
-    build:
-      context: ../Playpal-profile-service
-      dockerfile: Dockerfile
-    ports:
-      - "8087:8087"
-    networks:
-      - playpal-network
-
-  # Recorder
-  playpal-recorder:
-    container_name: playpal-recorder-container
-    build:
-      context: ../playpal-recorder
-      dockerfile: Dockerfile
-    ports:
-      - "8088:8088"
-    networks:
-      - playpal-network
-
-
-  # Runescape Service
-  playpal-runescape-service:
-    container_name: playpal-runescape-service-container
-    build:
-      context: ../playpal-runescape-service
-      dockerfile: Dockerfile
-    ports:
-      - "8089:8089"
-    networks:
-      - playpal-network
-
-  # User Service
-  playpal-user-service:
-    container_name: playpal-user-service-container
-    build:
-      context: ../playpal-user-service
-      dockerfile: Dockerfile
-    ports:
-      - "9090:9090"
+      - "3000:80"
     networks:
       - playpal-network
 

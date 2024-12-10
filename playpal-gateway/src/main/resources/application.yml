@@ -8,14 +8,19 @@ spring:
     import: "optional:consul:" # Import Consul configuration
   cloud:
     consul:
+      enabled: true
       discovery:
         prefer-ip-address: true # Prefer IP address for service discovery
+        query-passing: true
+      config:
+        data-key: application.yml
+        prefixes: config
+        format: yaml
+        default-context: defaults
     gateway:
       discovery:
         locator:
           enabled: true # Enable dynamic discovery-based routing
-        websocket:
-          enabled: true
       globalcors:
         cors-configurations:
           '[/**]': # Apply CORS to all routes
@@ -33,63 +38,48 @@ spring:
               - "*"
             allowCredentials: true # Allow cookies or credentials
       routes:
-        # Explicit route for Group Service
         - id: group-service
           uri: lb://group-service
           predicates:
             - Path=/group/**
           filters:
             - StripPrefix=1
-        # Explicit route for User Service
         - id: user-service
           uri: lb://user-service
           predicates:
             - Path=/user/**
           filters:
             - StripPrefix=1
-        # Explicit route for Runescape Service
         - id: runescape-service
           uri: lb://runescape-service
           predicates:
             - Path=/runescape/**
           filters:
             - StripPrefix=1
-        # Explicit route for Search Service
         - id: search-service
           uri: lb://search-service
           predicates:
             - Path=/search/**
           filters:
             - StripPrefix=1
-        # Explicit route for Communication Service
         - id: communication-service
           uri: lb://communication-service
           predicates:
             - Path=/communication/**
           filters:
             - StripPrefix=1
-        # Explicit route for Communication Service WebSocket
-        - id: communication-service-websocket
-          uri: lb://communication-service
-          predicates:
-            - Path=/communication/ws/**
-          filters:
-            - StripPrefix=1
-        # Explicit route for Friend Service
         - id: friend-service
           uri: lb://friend-service
           predicates:
             - Path=/friend/**
           filters:
             - StripPrefix=1
-        # Explicit route for Profile Service
         - id: profile-service
           uri: lb://profile-service
           predicates:
             - Path=/profile/**
           filters:
             - StripPrefix=1
-
 
 management:
   endpoints:

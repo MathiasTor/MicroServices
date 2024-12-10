@@ -1,0 +1,10 @@
+spring:
+  cloud:
+    consul:
+      discovery:
+        enabled: true
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}:live_l16:${spring.cloud.client.hostname}:${random.int(1000)}
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
