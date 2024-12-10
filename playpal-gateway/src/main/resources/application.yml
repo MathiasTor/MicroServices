@@ -14,6 +14,8 @@ spring:
       discovery:
         locator:
           enabled: true # Enable dynamic discovery-based routing
+        websocket:
+          enabled: true
       globalcors:
         cors-configurations:
           '[/**]': # Apply CORS to all routes
@@ -64,6 +66,13 @@ spring:
           uri: lb://communication-service
           predicates:
             - Path=/communication/**
+          filters:
+            - StripPrefix=1
+        # Explicit route for Communication Service WebSocket
+        - id: communication-service-websocket
+          uri: lb://communication-service
+          predicates:
+            - Path=/communication/ws/**
           filters:
             - StripPrefix=1
         # Explicit route for Friend Service

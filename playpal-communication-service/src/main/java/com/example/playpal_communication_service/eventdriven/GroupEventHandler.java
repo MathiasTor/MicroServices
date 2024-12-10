@@ -19,10 +19,18 @@ public class GroupEventHandler {
     public void handleGroupCreatedEvent(GroupDTO groupDTO) {
         log.info("Received group.created event: {}", groupDTO);
 
+        log.info("Group ID: {}", groupDTO.getGroupId());
+        log.info("Group Name: {}", groupDTO.getGroupName());
+        log.info("Participant IDs: {}", groupDTO.getUserIds());
+
+
         // Create a new conversation for the group participants
         try {
-            ConversationDTO conversation = conversationService.createConversation(groupDTO.getParticipantIds());
-            log.info("Conversation created for group {}: {}", groupDTO.getGroupId(), conversation);
+            ConversationDTO conversation = conversationService.createConversation(
+                    groupDTO.getUserIds(),
+                    groupDTO.getGroupName()
+            );
+            log.info("Conversation created: {}", conversation);
         } catch (Exception e) {
             log.error("Failed to create conversation for group {}: {}", groupDTO.getGroupId(), e.getMessage());
         }

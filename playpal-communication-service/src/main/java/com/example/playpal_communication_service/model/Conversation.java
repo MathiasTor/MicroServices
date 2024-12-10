@@ -17,7 +17,9 @@
         private Long id;
 
         @ElementCollection
-        private List<Long> participantIds = new ArrayList<>();
+        private List<Long> userIds = new ArrayList<>();
+
+        private String groupName;
 
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;

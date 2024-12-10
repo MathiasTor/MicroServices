@@ -11,13 +11,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/conversations")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000") // Allow requests from frontend
 public class ConversationController {
 
     private final ConversationService conversationService;
 
     @PostMapping
-    public ConversationDTO createConversation(@RequestBody List<Long> participantIds) {
-        return conversationService.createConversation(participantIds);
+    public ConversationDTO createConversation(@RequestBody List<Long> userIds, String groupName) {
+        return conversationService.createConversation(userIds, groupName);
     }
 
     @GetMapping("/all")
@@ -25,13 +26,22 @@ public class ConversationController {
         return conversationService.getAllConversations();
     }
 
+
+
+    @GetMapping("/{userId}/conversations")
+    public List<ConversationDTO> getUserConversations(@PathVariable Long userId) {
+        return conversationService.getConversationsForUser(userId);
+    }
+
+    /*
+
     @GetMapping("/{userId}")
     public List<ConversationDTO> getConversationsForUser(@PathVariable Long userId) {
         return conversationService.getConversationsForUser(userId);
     }
-
+*/
     @PostMapping("/messages")
-    public MessageDTO sendMessage(@RequestBody MessageDTO messageDTO) {
+    public MessageDTO sendMessage(@RequestBody MessageDTO messageDTO, Long conversationId) {
         return conversationService.sendMessage(messageDTO);
     }
 
@@ -48,4 +58,6 @@ public class ConversationController {
     ) {
         return conversationService.getMessagesInConversation(conversationId, page, size);
     }
+
+
 }

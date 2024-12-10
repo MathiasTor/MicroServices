@@ -5,6 +5,7 @@ import com.example.playpalgroupservice.dto.UserDTO;
 import com.example.playpalgroupservice.eventdriven.GroupEventPublisher;
 import com.example.playpalgroupservice.model.Group;
 import com.example.playpalgroupservice.repository.GroupRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Service
+@Slf4j
 public class GroupService {
 
     private final RestTemplate restTemplate;
@@ -46,9 +48,11 @@ public class GroupService {
         // Publish the group.created event
         GroupDTO groupDTO = new GroupDTO();
         groupDTO.setGroupId(savedGroup.getGroupID());
+        groupDTO.setGroupName(savedGroup.getGroupName());
         groupDTO.setUserIds(savedGroup.getUserIds());
         groupEventPublisher.publishGroupCreatedEvent(groupDTO);
 
+        log.info("Publishing GroupDTO to RabbitMQ: {}", groupDTO);
         return savedGroup;
     }
 

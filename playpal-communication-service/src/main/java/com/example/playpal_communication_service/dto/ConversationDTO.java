@@ -10,8 +10,9 @@ import java.util.List;
 @Setter
 public class ConversationDTO {
     private Long id;
-    private List<Long> participantIds;
+    private List<Long> userIds;
+    private String groupName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<MessageDTO> messages; // Include messages in the response
+    private List<MessageDTO> messages;
 }
