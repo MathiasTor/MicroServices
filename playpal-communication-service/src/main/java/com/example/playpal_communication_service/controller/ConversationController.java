@@ -11,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/conversations")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000") // Allow requests from frontend
 public class ConversationController {
 
     private final ConversationService conversationService;

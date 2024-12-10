@@ -34,7 +34,7 @@ public class ConversationServiceImplementation implements ConversationService {
 
         Conversation conversation = new Conversation();
         conversation.setUserIds(userIds);
-        conversation.setGroupName(groupName); //todo: Fetch name from posts that make group?
+        conversation.setGroupName(groupName);
         conversation.setCreatedAt(LocalDateTime.now());
         conversation.setUpdatedAt(LocalDateTime.now());
         return mapToConversationDTO(conversationRepository.save(conversation));

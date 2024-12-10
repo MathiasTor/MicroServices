@@ -9,13 +9,19 @@ const ChatComponent = () => {
     const [selectedConversation, setSelectedConversation] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
+    const [username, setUsername] = useState({});
     const stompClientRef = useRef(null);
     const messagesEndRef = useRef(null);
 
     const userid = Cookies.get("userid");
     console.log("User ID set in cookies:", userid);
 
+
+
+
     const addMessage = (newMessage) => {
+
+
         setMessages((prevMessages) => {
             const exists = prevMessages.some((msg) => msg.id === newMessage.id);
             if (!exists) {
@@ -45,7 +51,7 @@ const ChatComponent = () => {
             }
 
             try {
-                const response = await fetch(`http://localhost:8085/api/conversations/${userid}/conversations`);
+                const response = await fetch(`http://localhost:8080/communication/api/conversations/${userid}/conversations`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch conversations");
                 }
@@ -63,12 +69,13 @@ const ChatComponent = () => {
         fetchConversations();
     }, [userid]);
 
+
     useEffect(() => {
         const fetchMessages = async () => {
             if (!selectedConversation?.id) return;
 
             try {
-                const response = await fetch(`http://localhost:8085/api/conversations/${selectedConversation.id}/messages`);
+                const response = await fetch(`http://localhost:8080/communication/api/conversations/${selectedConversation.id}/messages`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch messages");
                 }
