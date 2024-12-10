@@ -1,0 +1,74 @@
+/* Container styling */
+.live-search-container {
+    margin: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Toggle Live Button Styling */
+.toggle-live-button {
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.toggle-live-button.active {
+    background-color: #28a745; /* Green for active */
+}
+
+.toggle-live-button:hover {
+    background-color: #0056b3; /* Darker blue for hover */
+}
+
+.toggle-live-button.active:hover {
+    background-color: #218838; /* Darker green for active hover */
+}
+
+/* Live Users List Styling */
+.live-users-list {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Individual User Card Styling */
+.live-user-card {
+    width: 90%;
+    max-width: 400px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.live-user-card.self {
+    background-color: #e7f5ff; /* Light blue background for self */
+    border-color: #007bff;
+}
+
+.live-user-card h4 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.live-user-card p {
+    margin: 5px 0 0 0;
+    font-size: 14px;
+    color: #555;
+}

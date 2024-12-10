@@ -21,6 +21,7 @@ spring:
           '[/**]': # Apply CORS to all routes
             allowedOrigins:
               - "http://localhost:3000" # Add the allowed origin(s) here
+              - "http://localhost:8080"
             allowedMethods:
               - "GET"
               - "POST"
@@ -61,6 +62,13 @@ spring:
             - Path=/search/**
           filters:
             - StripPrefix=1
+        # Explicit route for Live-Search Service
+        - id: live-search-service
+          uri: lb://live-search-service
+          predicates:
+            - Path=/live-search/**
+          filters:
+            - StripPrefix=1
         # Explicit route for Communication Service
         - id: communication-service
           uri: lb://communication-service
@@ -72,7 +80,7 @@ spring:
         - id: communication-service-websocket
           uri: lb://communication-service
           predicates:
-            - Path=/communication/ws/**
+            - Path=/ws/**
           filters:
             - StripPrefix=1
         # Explicit route for Friend Service

@@ -32,3 +32,5 @@ replay_pid*
 /playpal-friend-service/data
 /playpal-search-service/~/data
 playpal-group-service/data/groupdb.lock.db
+/playpal-group-service/data
+/playpal-livesearch-service/~/data
