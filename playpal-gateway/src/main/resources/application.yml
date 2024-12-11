@@ -26,7 +26,6 @@ spring:
           '[/**]': # Apply CORS to all routes
             allowedOrigins:
               - "http://localhost:3000" # Add the allowed origin(s) here
-              - "http://localhost:8080"
             allowedMethods:
               - "GET"
               - "POST"

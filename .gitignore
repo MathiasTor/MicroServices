@@ -34,3 +34,4 @@ replay_pid*
 playpal-group-service/data/groupdb.lock.db
 /playpal-group-service/data
 /playpal-livesearch-service/~/data
+/playpal-user-service/~/data
