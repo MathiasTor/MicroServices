@@ -7,6 +7,9 @@ import ProfileComponent from "./components/ProfileComponent";
 import PostPage from "./components/PostPage";
 import ChatComponent from "./components/ChatComponent";
 import LiveSearchComponent from "./components/LiveSearchComponent";
+import GroupComponent from "./components/GroupComponent";
+import GroupOverviewComponent from "./components/GroupOverviewComponent";
+import DirectMessageComponent from "./components/DirectMessageComponent";
 
 const App = () => {
     return (
@@ -18,6 +21,9 @@ const App = () => {
                 <Route path="/posts" element={<PostPage />} />
                 <Route path="/chat" element={<ChatComponent />} />
                 <Route path={"/live-search"} element={<LiveSearchComponent />} />
+                <Route path={"/groups"} element={<GroupComponent />} />
+                <Route path="/groups/:groupId" element={<GroupOverviewComponent />} />
+                <Route path="/dm/:dmId" element={<DirectMessageComponent />} />
             </Routes>
         </Router>
     );

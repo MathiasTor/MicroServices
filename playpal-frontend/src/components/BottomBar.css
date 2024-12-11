@@ -10,9 +10,12 @@
     justify-content: flex-end;
     align-items: center;
     height: 5%;
+    z-index: 1000;
 }
 
-.friends-toggle-button {
+.friends-toggle-button,
+.chat-toggle-button,
+.group-toggle-button {
     position: relative;
     background-color: #007bff;
     color: white;
@@ -23,46 +26,12 @@
     cursor: pointer;
     margin-right: 20px;
     margin-bottom: 3%;
-}
-.friends-toggle-button{
-    position: relative;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-right: 20px;
-    margin-bottom: 3%;
+    transition: background-color 0.3s ease;
 }
 
-.chat-toggle-button{
-    position: relative;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-right: 20px;
-    margin-bottom: 3%;
-}
-.group-toggle-button{
-    position: relative;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-right: 20px;
-    margin-bottom: 3%;
-}
-
-.friends-toggle-button:hover .group-toggle-button .chat-toggle-button {
+.friends-toggle-button:hover,
+.chat-toggle-button:hover,
+.group-toggle-button:hover {
     background-color: #0056b3;
 }
 
@@ -77,16 +46,41 @@
     font-size: 12px;
 }
 
-.friends-list-container {
+.friends-list-container,
+.chat-list-container {
     position: fixed;
     bottom: 60px;
     right: 20px;
     width: 300px;
+    max-height: 400px;
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
-    overflow: hidden;
-    z-index: 1000;
+    overflow-y: auto;
+    z-index: 1001;
+    padding: 10px;
+}
+
+.friends-list-container ul,
+.chat-list-container ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.friends-list-container li,
+.chat-list-container li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.friends-list-container li:hover,
+.chat-list-container li:hover {
+    background-color: #f9f9f9;
+    cursor: pointer;
 }
 
 .accept-button {
@@ -97,19 +91,92 @@
     border-radius: 5px;
     padding: 5px 10px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .accept-button:hover {
     background-color: #218838;
 }
-.notification-badge {
-    background-color: red;
+
+.dm-recipient-button {
+    background-color: transparent;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    padding: 5px;
+    text-align: left;
+    width: 100%;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.dm-recipient-button:hover {
     color: white;
-    font-size: 12px;
+}
+
+.selected-conversation {
+    background-color: #e7f1ff;
     font-weight: bold;
-    border-radius: 50%;
-    padding: 2px 6px;
-    margin-left: 8px;
-    display: inline-block;
-    vertical-align: middle;
+}
+
+.chat-with {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.chat-messages {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.chat-message {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.chat-message-left {
+    justify-content: flex-start;
+}
+
+.chat-message-right {
+    justify-content: flex-end;
+}
+
+.chat-message strong {
+    margin-right: 5px;
+}
+
+.chat-input {
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input-box {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.chat-send-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.chat-send-button:hover {
+    background-color: #0056b3;
 }

@@ -16,9 +16,6 @@ const ChatComponent = () => {
     const userid = Cookies.get("userid");
     console.log("User ID set in cookies:", userid);
 
-
-
-
     const addMessage = (newMessage) => {
 
 

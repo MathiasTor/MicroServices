@@ -12,8 +12,8 @@ const FriendsListComponent = () => {
     const [newFriendUsername, setNewFriendUsername] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
-    const [activeTab, setActiveTab] = useState("friends"); // Tracks the active tab
-    const [showAddFriend, setShowAddFriend] = useState(false); // Tracks visibility of Add Friend section
+    const [activeTab, setActiveTab] = useState("friends");
+    const [showAddFriend, setShowAddFriend] = useState(false);
 
     const friendsAPI = "http://localhost:8080/friend/api/friends";
     const userAPI = "http://localhost:8080/user/api/users";
@@ -119,7 +119,7 @@ const FriendsListComponent = () => {
     };
 
     function chatFriend(friend) {
-        //TODO: Implement chat functionality
+        console.log("Chatting with", friend);
     }
 
     const renderTabContent = () => {
@@ -134,12 +134,6 @@ const FriendsListComponent = () => {
                                     <li key={index} className="friend-item">
                                         {friend}{" "}
                                         <div className="friend-actions">
-                                            <button
-                                                onClick={() => chatFriend(friend)}
-                                                className="chat-friend-button"
-                                            >
-                                                Chat
-                                            </button>
                                             <button
                                                 onClick={() => removeFriend(friend)}
                                                 className="remove-friend-button"

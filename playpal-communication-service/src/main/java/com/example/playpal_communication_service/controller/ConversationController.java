@@ -4,6 +4,7 @@ import com.example.playpal_communication_service.dto.ConversationDTO;
 import com.example.playpal_communication_service.dto.MessageDTO;
 import com.example.playpal_communication_service.service.ConversationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/conversations")
 @RequiredArgsConstructor
+@Slf4j
 public class ConversationController {
 
     private final ConversationService conversationService;
@@ -18,6 +20,27 @@ public class ConversationController {
     @PostMapping
     public ConversationDTO createConversation(@RequestBody List<Long> userIds, String groupName) {
         return conversationService.createConversation(userIds, groupName);
+    }
+
+    //Create a dm conversation
+    @PostMapping("/dm")
+    public ConversationDTO createDMConversation(@RequestBody List<Long> userIds) {
+        log.info("Creating dm conversation with participants: {}", userIds);
+        return conversationService.createDMConversation(userIds);
+    }
+
+    //Get dms for user
+    @GetMapping("/dm/{userId}")
+    public List<ConversationDTO> getDMsForUser(@PathVariable Long userId) {
+        log.info("Getting dms for user: {}", userId);
+        return conversationService.getDMsForUser(userId);
+    }
+
+    //Get conversation id for dm
+    @GetMapping("/dm/{userId1}/{userId2}")
+    public Long getConversationIdForDM(@PathVariable Long userId1, @PathVariable Long userId2) {
+        log.info("Getting conversation id for dm between users: {} and {}", userId1, userId2);
+        return conversationService.getConversationIdForDM(userId1, userId2);
     }
 
     @GetMapping("/all")

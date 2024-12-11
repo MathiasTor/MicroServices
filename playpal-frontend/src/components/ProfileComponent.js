@@ -22,7 +22,7 @@ const ProfileComponent = () => {
 
         if (!loggedInUserId) {
             setError("User is not logged in.");
-            navigate("/login");
+            navigate("/");
             return;
         }
 

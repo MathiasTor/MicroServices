@@ -13,4 +13,9 @@ public interface ConversationService {
     List<MessageDTO> getMessagesInConversation(Long conversationId, int page, int size);
     ConversationDTO getConversationWithMessages(Long conversationId);
 
+    ConversationDTO createDMConversation(List<Long> userIds);
+
+    List<ConversationDTO> getDMsForUser(Long userId);
+
+    Long getConversationIdForDM(Long userId1, Long userId2);
 }

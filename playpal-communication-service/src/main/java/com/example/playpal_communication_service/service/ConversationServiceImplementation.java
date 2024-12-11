@@ -40,6 +40,36 @@ public class ConversationServiceImplementation implements ConversationService {
         return mapToConversationDTO(conversationRepository.save(conversation));
     }
 
+    @Override
+    public ConversationDTO createDMConversation(List<Long> userIds) {
+        log.info("Creating conversation with participants: {}", userIds);
+
+        Conversation conversation = new Conversation();
+        conversation.setUserIds(userIds);
+        conversation.setGroupName("Direct Message: " + userIds.get(0) + " and " + userIds.get(1));
+        conversation.setCreatedAt(LocalDateTime.now());
+        conversation.setUpdatedAt(LocalDateTime.now());
+        return mapToConversationDTO(conversationRepository.save(conversation));
+    }
+
+    @Override
+    public List<ConversationDTO> getDMsForUser(Long userId) {
+        return conversationRepository.findByUserIdsContains(userId).stream()
+                .filter(conversation -> conversation.getGroupName().startsWith("Direct Message"))
+                .map(this::mapToConversationDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Long getConversationIdForDM(Long userId1, Long userId2) {
+        List<Conversation> conversations = conversationRepository.findByUserIdsContains(userId1);
+        for (Conversation conversation : conversations) {
+            if (conversation.getUserIds().contains(userId2) && conversation.getGroupName().startsWith("Direct Message")) {
+                return conversation.getId();
+            }
+        }
+        return createDMConversation(List.of(userId1, userId2)).getId();
+    }
 
     @Override
     public List<ConversationDTO> getAllConversations() {

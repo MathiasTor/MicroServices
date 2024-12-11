@@ -1,14 +1,21 @@
 package no.micro.friendservice.service;
 
+import lombok.extern.slf4j.Slf4j;
 import no.micro.friendservice.model.Friends;
 import no.micro.friendservice.repo.FriendsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class FriendService {
     @Autowired
     private FriendsRepo friendsRepo;
@@ -37,8 +44,6 @@ public class FriendService {
 
             friendsRepo.save(sender);
         }
-
-        System.out.println("Request from: " + senderId + " to: " + recipientId);
 
         sender.getPendingIds().add(recipientId);
         return friendsRepo.save(sender);
@@ -70,11 +75,22 @@ public class FriendService {
     // Remove friend
     public Friends removeFriend(Long userId, Long friendId) {
         Friends friends = friendsRepo.findByUserId(userId);
+        Friends friendToRemove = friendsRepo.findByUserId(friendId);
+
         if (friends != null && friends.getFriendIds() != null) {
             friends.getFriendIds().remove(friendId);
-            return friendsRepo.save(friends);
+            log.info("Removed friend " + friendId + " from user " + userId);
         }
-        return friends; // Return null or handle appropriately
+
+        if (friendToRemove != null && friendToRemove.getFriendIds() != null) {
+            friendToRemove.getFriendIds().remove(userId);
+            log.info("Removed friend " + userId + " from user " + friendId);
+        }
+
+        friendsRepo.save(friendToRemove);
+        friendsRepo.save(friends);
+
+        return friends;
     }
 
     // Block friend
@@ -106,7 +122,7 @@ public class FriendService {
             friends.getBlockedIds().remove(friendId);
             return friendsRepo.save(friends);
         }
-        return friends; // Return null or handle appropriately
+        return friends;
     }
 
     // Get friends for user
@@ -143,11 +159,38 @@ public class FriendService {
         Friends user = friendsRepo.findByUserId(userId);
         Friends friend = friendsRepo.findByUserId(friendId);
 
-        if(user != null && friend != null) {
+        if (user != null && friend != null) {
             user.getFriendIds().add(friendId);
             friend.getFriendIds().add(userId);
 
             friend.getPendingIds().remove(userId);
+
+            // Create a conversation between the two users
+            List<Long> userIds = new ArrayList<>();
+            userIds.add(userId);
+            userIds.add(friendId);
+
+            // Send POST request to create the conversation
+            try {
+                String url = "http://localhost:8080/communication/api/conversations/dm";
+                RestTemplate restTemplate = new RestTemplate();
+
+                // Set headers
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                HttpEntity<List<Long>> request = new HttpEntity<>(userIds, headers);
+
+                ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+
+                if (response.getStatusCode().is2xxSuccessful()) {
+                    log.info("Successfully created conversation between users " + userId + " and " + friendId);
+                } else {
+                    log.error("Failed to create conversation between users " + userId + " and " + friendId);
+                }
+            } catch (Exception e) {
+                log.error("Failed to create conversation between users " + userId + " and " + friendId);
+            }
 
             friendsRepo.save(friend);
             friendsRepo.save(user);
