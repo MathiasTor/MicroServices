@@ -7,6 +7,7 @@ backend_services=(
   "playpal-group-service"
   "playpal-profile-service"
   "playpal-runescape-service"
+  "playpal-leaderboard-service"
   "playpal-search-service"
   "playpal-user-service"
   "playpal-gateway"
