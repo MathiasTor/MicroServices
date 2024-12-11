@@ -6,6 +6,8 @@ import no.micro.rs.service.RunescapeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/runescape")
@@ -42,5 +44,11 @@ public class RunescapeController {
     @GetMapping("/is-linked/{userid}")
     public boolean isLinked(@PathVariable Long userid) {
         return runescapeService.isLinked(userid);
+    }
+
+    //get all runescape characters
+    @GetMapping("/runescape-chars")
+    public List<RunescapeChar> getAllRunescapeChars() {
+        return runescapeService.getAllRunescapeChars();
     }
 }

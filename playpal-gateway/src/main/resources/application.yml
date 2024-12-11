@@ -80,6 +80,12 @@ spring:
             - Path=/profile/**
           filters:
             - StripPrefix=1
+        - id: leaderboard-service
+          uri: lb://leaderboard-service
+          predicates:
+            - Path=/leaderboard/**
+          filters:
+            - StripPrefix=1
 
 management:
   endpoints:
