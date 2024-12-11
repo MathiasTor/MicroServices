@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>Playpal-profile-service</artifactId>
+	<artifactId>playpal-profile-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Playpal-profile-service</name>
+	<name>playpal-profile-service</name>
 	<description>Profile management for users</description>
 	<url/>
 	<licenses>

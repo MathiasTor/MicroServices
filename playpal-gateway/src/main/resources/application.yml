@@ -68,6 +68,13 @@ spring:
             - Path=/communication/**
           filters:
             - StripPrefix=1
+        # Explicit route for Communication Service WebSocket
+        - id: communication-service-websocket
+          uri: lb://communication-service
+          predicates:
+            - Path=/communication/ws/**
+          filters:
+            - StripPrefix=1
         - id: friend-service
           uri: lb://friend-service
           predicates:
