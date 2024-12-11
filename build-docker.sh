@@ -1,16 +1,28 @@
 #!/bin/bash
 
-# List of services and their corresponding directories
-declare -A services=(
-  ["communication-service"]="playpal-communication-service"
-  ["profile-service"]="playpal-profile-service"
-  ["friend-service"]="playpal-friend-service"
-  ["group-service"]="playpal-group-service"
-  ["runescape-service"]="playpal-runescape-service"
-  ["search-service"]="playpal-search-service"
-  ["user-service"]="playpal-user-service"
-  ["gateway"]="playpal-gateway"
-  ["frontend"]="playpal-frontend"
+# List of services and their corresponding directories using indexed arrays
+keys=(
+  "communication-service"
+  "profile-service"
+  "friend-service"
+  "group-service"
+  "runescape-service"
+  "search-service"
+  "user-service"
+  "gateway"
+  "frontend"
+)
+
+values=(
+  "playpal-communication-service"
+  "playpal-profile-service"
+  "playpal-friend-service"
+  "playpal-group-service"
+  "playpal-runescape-service"
+  "playpal-search-service"
+  "playpal-user-service"
+  "playpal-gateway"
+  "playpal-frontend"
 )
 
 # Docker image version for services
@@ -40,8 +52,11 @@ else
 fi
 
 # Loop through the services and build each one
-for service in "${!services[@]}"; do
-  service_dir="${services[$service]}"
+for i in "${!keys[@]}"; do
+  service="${keys[$i]}"
+  service_dir="${values[$i]}"
+
+  echo "Key: $service, Value: $service_dir" | tee -a $LOG_FILE # Debug output for key-value pairs
 
   if [ -d "$service_dir" ]; then
     echo "Building image for $service from $service_dir..." | tee -a $LOG_FILE
