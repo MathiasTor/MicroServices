@@ -51,7 +51,7 @@ const ChatComponent = () => {
             }
 
             try {
-                const response = await fetch(`http://localhost:8085/api/conversations/${userid}/conversations`);
+                const response = await fetch(`http://localhost:8080/communication/api/conversations/${userid}/conversations`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch conversations");
                 }
@@ -75,7 +75,7 @@ const ChatComponent = () => {
             if (!selectedConversation?.id) return;
 
             try {
-                const response = await fetch(`http://localhost:8085/api/conversations/${selectedConversation.id}/messages`);
+                const response = await fetch(`http://localhost:8080/communication/api/conversations/${selectedConversation.id}/messages`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch messages");
                 }
