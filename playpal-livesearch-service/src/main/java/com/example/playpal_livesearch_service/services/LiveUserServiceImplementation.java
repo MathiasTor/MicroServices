@@ -231,11 +231,10 @@ public class LiveUserServiceImplementation implements LiveUserService {
         String videoGame = match.getVideoGame() != null ? match.getVideoGame() : currentUser.getVideoGame();
         List<String> preferences = (match.getTags() != null && !match.getTags().isEmpty()) ? match.getTags() : currentUser.getTags();
         if (preferences == null) preferences = new ArrayList<>();
-        
+
         if (!groupName.isEmpty() && userIds.size() >= 2) {
             pushGroupToService(userIds, videoGame, preferences, groupName);
         } else {
-            // Log a warning if data is incomplete
             System.err.println("Incomplete group data. Not pushing to service.");
         }
 

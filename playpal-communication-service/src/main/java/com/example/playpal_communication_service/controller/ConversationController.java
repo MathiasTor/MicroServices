@@ -19,6 +19,7 @@ public class ConversationController {
 
     @PostMapping
     public ConversationDTO createConversation(@RequestBody List<Long> userIds, String groupName) {
+        log.info("Creating conversation with participants: {}", userIds);
         return conversationService.createConversation(userIds, groupName);
     }
 

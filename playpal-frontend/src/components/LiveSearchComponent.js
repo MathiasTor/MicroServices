@@ -77,8 +77,8 @@ const LiveSearchComponent = () => {
                     setIsLive(false);
 
                     // Redirect to group route
-                    const groupId = response.data.groupId;
-                    navigate(`/groups/${groupId}`);
+                    handleGroupRedirect(userId);
+
                 }
             } catch (error) {
                 console.error("Error polling for match:", error);
@@ -91,6 +91,13 @@ const LiveSearchComponent = () => {
             }
         }, 1000);
     };
+
+    const handleGroupRedirect = async (userId) => {
+        const response = await axios.get(`http://localhost:8080/group/api/group/latest/${userId}`);
+        const groupId = response.data.groupID;
+
+        navigate(`/groups/${groupId}`);
+    }
 
     const toggleLiveStatus = async () => {
         if (loading) return;

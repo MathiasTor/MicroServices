@@ -76,4 +76,10 @@ public class GroupController {
     public List<Group> getGroupsForUser(@PathVariable Long userId) {
         return groupService.getGroupsForUser(userId);
     }
+
+    //Get latest group for user
+    @GetMapping("/latest/{userId}")
+    public Group getLatestGroupForUser(@PathVariable Long userId) {
+        return groupService.getLatestGroupForUser(userId);
+    }
 }

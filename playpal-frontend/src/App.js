@@ -11,6 +11,7 @@ import GroupComponent from "./components/GroupComponent";
 import GroupOverviewComponent from "./components/GroupOverviewComponent";
 import DirectMessageComponent from "./components/DirectMessageComponent";
 import Leaderboard from "./components/Leaderboard";
+import LiveSearch from "./components/LiveSearch";
 
 const App = () => {
     return (
@@ -21,7 +22,7 @@ const App = () => {
                 <Route path="/profile/:userId" element={<ProfileComponent />} />
                 <Route path="/posts" element={<PostPage />} />
                 <Route path="/chat" element={<ChatComponent />} />
-                <Route path={"/live-search"} element={<LiveSearchComponent />} />
+                <Route path={"/live-search"} element={<LiveSearch />} />
                 <Route path={"/groups"} element={<GroupComponent />} />
                 <Route path="/groups/:groupId" element={<GroupOverviewComponent />} />
                 <Route path="/dm/:dmId" element={<DirectMessageComponent />} />

@@ -57,6 +57,11 @@ public class GroupService {
 
         groupEventPublisher.publishGroupCreatedEvent(groupDTO);
 
+        log.info("Name of the group: {}", group.getGroupName());
+        log.info("Members of the group: {}", group.getUserIds());
+        log.info("Group created: {}", savedGroup);
+        log.info("GroupDTO created: {}", groupDTO);
+
         log.info("Publishing GroupDTO to RabbitMQ: {}", groupDTO);
         return savedGroup;
     }
@@ -109,5 +114,10 @@ public class GroupService {
 
     public List<Group> getGroupsForUser(Long userId) {
         return groupRepository.findAllByUserIdsContains(userId);
+    }
+
+    public Group getLatestGroupForUser(Long userId) {
+        List<Group> groups = groupRepository.findAllByUserIdsContains(userId);
+        return groups.isEmpty() ? null : groups.get(groups.size() - 1);
     }
 }

@@ -68,6 +68,12 @@ spring:
             - Path=/livesearch/**
           filters:
             - StripPrefix=1
+        - id: livesearch-service2
+          uri: lb://livesearch-service2
+          predicates:
+            - Path=/livesearch2/**
+          filters:
+            - StripPrefix=1
         - id: communication-service
           uri: lb://communication-service
           predicates:
