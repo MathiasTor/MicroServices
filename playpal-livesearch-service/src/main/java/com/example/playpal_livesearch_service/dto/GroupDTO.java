@@ -14,4 +14,11 @@ public class GroupDTO {
     private String groupName;
     private String groupDescription;
     private List<Long> userIds;
+
+    //constructor
+    public GroupDTO(String groupName, String groupDescription, List<Long> userIds) {
+        this.groupName = groupName;
+        this.groupDescription = groupDescription;
+        this.userIds = userIds;
+    }
 }

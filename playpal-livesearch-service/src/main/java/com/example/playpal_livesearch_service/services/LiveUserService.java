@@ -15,4 +15,7 @@ public interface LiveUserService {
     boolean findByUserIdAndIsLiveTrue(Long userId);
     void setUserLiveStatus(Long userId, boolean isLive);
     LiveUser getMatchStatus(Long userId);
+
+
+    MatchResponseDTO matchLiveUser2(Long userId);
 }

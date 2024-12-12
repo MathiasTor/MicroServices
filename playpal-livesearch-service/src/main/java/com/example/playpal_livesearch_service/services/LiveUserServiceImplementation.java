@@ -1,15 +1,22 @@
 package com.example.playpal_livesearch_service.services;
 
 import com.example.playpal_livesearch_service.clients.GroupClient;
+import com.example.playpal_livesearch_service.dto.GroupDTO;
 import com.example.playpal_livesearch_service.dto.MatchResponseDTO;
 import com.example.playpal_livesearch_service.models.LiveUser;
 import com.example.playpal_livesearch_service.repository.LiveUserRepository;
+import jakarta.websocket.OnClose;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -125,11 +132,12 @@ public class LiveUserServiceImplementation implements LiveUserService {
         }
 
             // Create a new group if one doesn't exist
+        /*
             Long groupId = groupClient.createGroup(
                     List.of(userId, matchedUser.getUserId()),
                     matchedUser.getVideoGame(),
                     matchedUser.getTags()
-            );
+            )
 
         currentUser.setLive(false);
         currentUser.setMatchedUserId(matchedUser.getUserId());
@@ -145,6 +153,9 @@ public class LiveUserServiceImplementation implements LiveUserService {
         log.info("Matched user {} with user {} in group {}", userId, matchedUser.getUserId(), groupId);
 
         return new MatchResponseDTO(matchedUser, groupId);
+
+         */
+        return null;
         }
 
 
@@ -181,6 +192,83 @@ public class LiveUserServiceImplementation implements LiveUserService {
         liveUserRepository.saveAll(expiredUsers);
 
         log.info("Cleaned up {} expired live users.", expiredUsers.size());
+    }
+
+    @Override
+    public MatchResponseDTO matchLiveUser2(Long userId){
+        LiveUser currentUser = liveUserRepository.findByUserId(userId)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No LiveUser found for userId: " + userId));
+
+        List<LiveUser> liveUsers = liveUserRepository.findByIsLiveTrue();
+
+        LiveUser match = null;
+        List<Long> userIds = new ArrayList<>();
+        String groupName = "";
+
+        // Find a match that is not the current user
+        for (LiveUser matchedUser : liveUsers) {
+            if (!matchedUser.getUserId().equals(userId)) {
+                userIds.add(userId);
+                userIds.add(matchedUser.getUserId());
+                groupName = generateGroupName(userId, matchedUser.getUserId());
+                match = matchedUser;
+                break;
+            }
+        }
+
+        if (match == null) {
+            return new MatchResponseDTO(null, null);
+        }
+
+        // Set both users as no longer live
+        currentUser.setLive(false);
+        match.setLive(false);
+        liveUserRepository.save(currentUser);
+        liveUserRepository.save(match);
+
+        String videoGame = match.getVideoGame() != null ? match.getVideoGame() : currentUser.getVideoGame();
+        List<String> preferences = (match.getTags() != null && !match.getTags().isEmpty()) ? match.getTags() : currentUser.getTags();
+        if (preferences == null) preferences = new ArrayList<>();
+        
+        if (!groupName.isEmpty() && userIds.size() >= 2) {
+            pushGroupToService(userIds, videoGame, preferences, groupName);
+        } else {
+            // Log a warning if data is incomplete
+            System.err.println("Incomplete group data. Not pushing to service.");
+        }
+
+        return new MatchResponseDTO(match, currentUser.getGroupId());
+    }
+
+    private String generateGroupName(Long userId, Long matchId){
+        if (userId < matchId) {
+            return userId + "-" + matchId + "-Matched Group";
+        } else {
+            return matchId + "-" + userId + "-Matched Group";
+        }
+    }
+
+    private void pushGroupToService(List<Long> userIds, String game, List<String> preferences, String groupName) {
+        Map<String, Object> groupPayload = new HashMap<>();
+        groupPayload.put("groupName", groupName);
+        groupPayload.put("groupDescription", String.join(", ", preferences));
+        groupPayload.put("userIds", userIds);
+
+        String apiEndpoint = "http://localhost:8080/group/api/group/new";
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(apiEndpoint, groupPayload, String.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                System.out.println("Group pushed successfully: " + response.getBody());
+            } else {
+                System.err.println("Failed to push group. Status: " + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            System.err.println("Error while pushing group: " + e.getMessage());
+        }
     }
 }
 

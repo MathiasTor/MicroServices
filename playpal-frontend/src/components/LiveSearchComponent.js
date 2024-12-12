@@ -55,32 +55,38 @@ const LiveSearchComponent = () => {
     const pollForMatch = async (userId) => {
         let retries = 0;
         const maxRetries = 10;
+        let isMatchFound = false; // Flag to stop unnecessary calls
+
         const interval = setInterval(async () => {
+            if (isMatchFound) {
+                clearInterval(interval);
+                return;
+            }
+
             try {
                 const response = await axios.post(
-                    `http://localhost:8080/livesearch/api/live-search/match/${userId}`
+                    `http://localhost:8080/livesearch/api/live-search/match-2/${userId}`
                 );
 
                 console.log("Match response:", response.data);
 
                 if (response.status === 200 && response.data) {
                     clearInterval(interval);
+                    isMatchFound = true; // Update flag
                     setMatchedUser(response.data);
                     setIsLive(false);
 
                     // Redirect to group route
                     const groupId = response.data.groupId;
                     navigate(`/groups/${groupId}`);
-                    return;
-
-                    return;
-                }
-                retries++;
-                if (retries >= maxRetries) {
-                    clearInterval(interval);
                 }
             } catch (error) {
                 console.error("Error polling for match:", error);
+                clearInterval(interval); // Clear interval on error
+            }
+
+            retries++;
+            if (retries >= maxRetries) {
                 clearInterval(interval);
             }
         }, 1000);

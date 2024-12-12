@@ -25,14 +25,14 @@ public class GroupClient {
     }
 
 
-    public Long createGroup(List<Long> userIds, String game, List<String> preferences) {
+    public Long createGroup(List<Long> userIds, String game, List<String> preferences, String groupName) {
         String url = groupServiceUrl + "/group/api/group/new";
 
         log.info("Creating group for users: {}, game: {}, preferences: {}", userIds, game, preferences);
 
         Map<String, Object> groupRequest = Map.of(
                 "userIds", userIds,
-                "groupName", game + " Group",
+                "groupName", groupName,
                 "groupDescription", String.join(", ", preferences) //
         );
 

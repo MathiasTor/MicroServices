@@ -58,7 +58,13 @@ public class LiveUserController {
         return matchResponseDto;
     }
 
+    @PostMapping("/match-2/{userId}")
+    public MatchResponseDTO matchUser2(@PathVariable Long userId) {
+        log.info("Attempting to match user with ID: {}", userId);
+        MatchResponseDTO matchResponseDto = liveUserService.matchLiveUser2(userId);
 
+        return matchResponseDto;
+    }
 
 
 }
