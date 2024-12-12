@@ -42,3 +42,4 @@ playpal-group-service/data/groupdb.lock.db
 /playpal-user-service/data
 /playpal-search-service/data
 /playpal-communication-service/~/data
+/Playpal-profile-service/data
