@@ -93,6 +93,21 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_CONSUL_HOST=consul
 
+  # Leaderboard service
+  leaderboard-service:
+    container_name: leaderboard-service-container
+    image: leaderboard-service:1.0
+    ports:
+      - "3012:3012"
+    networks:
+      - playpal-network
+    depends_on:
+      - consul
+      - rabbitmq
+    environment:
+    - SPRING_PROFILES_ACTIVE=docker
+    - SPRING_CLOUD_CONSUL_HOST=consul
+
   # Runescape Service
   runescape-service:
     container_name: runescape-service-container
