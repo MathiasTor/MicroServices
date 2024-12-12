@@ -1,6 +1,7 @@
 package com.example.playpalgroupservice.service;
 
 import com.example.playpalgroupservice.dto.GroupDTO;
+import com.example.playpalgroupservice.dto.SearchEndedEvent;
 import com.example.playpalgroupservice.dto.UserDTO;
 import com.example.playpalgroupservice.eventdriven.GroupEventPublisher;
 import com.example.playpalgroupservice.model.Group;
@@ -41,6 +42,7 @@ public class GroupService {
         return groupRepository.findById(id).orElse(null);
     }
 
+
     public Group createGroup(Group group) {
         // Save the group to the database
         Group savedGroup = groupRepository.save(group);
@@ -58,6 +60,7 @@ public class GroupService {
         log.info("Publishing GroupDTO to RabbitMQ: {}", groupDTO);
         return savedGroup;
     }
+
 
     public void deleteGroupById(Long id) { groupRepository.deleteById(id);}
 
