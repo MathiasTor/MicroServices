@@ -1,29 +1,60 @@
 .group-content {
     text-align: center;
-    margin: 20px 0;
+    margin: 20px auto;
     padding: 20px;
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 50%;
-    margin: 0 auto;
+    width: 60%;
 }
 
 .top-section {
-    text-align: center;
     margin-bottom: 20px;
 }
 
-.top-section{
-    font-size: 2rem;
+.top-section h1 {
+    font-size: 2.5rem;
     color: #0073e6;
     margin-bottom: 10px;
-    font-size: 10px;
 }
 
 .top-section p {
     font-size: 1rem;
     color: #666;
+}
+
+.create-group-section {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.create-group-section h2 {
+    font-size: 1.8rem;
+    color: #0073e6;
+    margin-bottom: 10px;
+}
+
+.group-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.create-group-button {
+    background-color: #0073e6;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.create-group-button:hover {
+    background-color: #005bb5;
 }
 
 .group-list {
@@ -46,7 +77,6 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Group card title */
 .group-card h2 {
     font-size: 1.5rem;
     color: #0073e6;
@@ -72,8 +102,4 @@
     border-radius: 5px;
     font-size: 0.9rem;
     color: #333;
-}
-
-.group-card ul li:last-child {
-    margin-bottom: 0;
 }
