@@ -10,7 +10,8 @@ import java.util.List;
 @Repository
 public interface LiveUserRepository extends JpaRepository<LiveUser, Long> {
     List<LiveUser> findByIsLiveTrue();
+
     List<LiveUser> findByUserId(Long userId);
-    List<LiveUser> findByUserIdAndIsLiveTrue(Long userId); // Spring Data JPA will create the query automatically
+    List<LiveUser> findByUserIdAndIsLiveTrue(Long userId);
     List<LiveUser> findByLiveStartTimeBeforeAndIsLiveTrue(LocalDateTime liveStartTime);
 }

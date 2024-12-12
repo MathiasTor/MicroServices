@@ -24,5 +24,8 @@ public class LiveUser {
     @ElementCollection
     private List<String> tags;
 
+    private Long groupId;
     private String videoGame;
+
+    private Long matchedUserId;
 }
