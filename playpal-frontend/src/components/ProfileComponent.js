@@ -23,6 +23,7 @@ const ProfileComponent = () => {
         if (!loggedInUserId) {
             setError("User is not logged in.");
             navigate("/");
+
             return;
         }
 
@@ -80,7 +81,12 @@ const ProfileComponent = () => {
                 setError("Failed to link RuneScape account.");
             });
 
-        window.location.reload();
+
+        if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
+
+        }else{
+            window.location.reload();
+        }
     };
 
     return (
