@@ -13,12 +13,12 @@ public class LeaderboardSyncTask {
         this.leaderboardService = leaderboardService;
     }
 
-    @Scheduled(cron = "0 0 0 * * MON") // Every Monday at midnight
+    @Scheduled(fixedRate = 3000) // Every Monday at midnight
     public void syncLeaderboardTotalWeekly() {
         leaderboardService.updateLeaderboardTotal();
     }
 
-    @Scheduled(cron = "0 0 0 * * MON")
+    @Scheduled(cron = "0 0 0 * * MON") // Every Monday at midnight
     public void syncLeaderboardWeekly() {
         leaderboardService.updateLeaderboardWeekly();
     }

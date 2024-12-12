@@ -28,12 +28,17 @@ const TopBar = () => {
         navigate("/groups");
     }
 
+    function HandleLeaderboard() {
+        navigate("/leaderboard");
+    }
+
     return (
         <div className="top-bar">
             <h1 className="logo">PlayPal</h1>
             <div className="nav-buttons">
                 <button className="nav-button" onClick={HandleHome}>Home</button>
-                <button className="nav-button" onClick={HandleGroup}> Groups </button>
+                <button className="nav-button" onClick={HandleGroup}> Groups</button>
+                <button className="nav-button" onClick={HandleLeaderboard}> leaderboard</button>
                 <button className="nav-button" onClick={HandleProfile}> Profile</button>
                 <button className="nav-button" onClick={HandleLogout}> Logout</button>
             </div>
