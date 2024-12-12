@@ -37,3 +37,8 @@ playpal-group-service/data/groupdb.lock.db
 /playpal-user-service/~/data
 /playpal-runescape-service/~/data
 /playpal-group-service/~/data
+/playpal-communication-service/data
+/playpal-runescape-service/data
+/playpal-user-service/data
+/playpal-search-service/data
+/playpal-communication-service/~/data
