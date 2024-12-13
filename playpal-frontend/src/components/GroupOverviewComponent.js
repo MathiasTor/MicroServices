@@ -18,47 +18,51 @@ const GroupOverviewComponent = () => {
     const stompClientRef = useRef(null);
     const userId = Cookies.get("userid");
 
+    // Fetch usernames for a list of userIds once
+    const fetchUsernamesOnce = async (userIds) => {
+        try {
+            if (!userIds || userIds.length === 0) return;
+
+            const response = await axios.post("http://localhost:8080/user/api/users/bulk", userIds, {
+                headers: { "Content-Type": "application/json" },
+            });
+
+            const usernameMap = response.data.reduce((map, user) => {
+                map[user.id] = user.username;
+                return map;
+            }, {});
+
+            setUsernames((prevUsernames) => ({ ...prevUsernames, ...usernameMap }));
+        } catch (error) {
+            console.error("Error fetching usernames:", error);
+        }
+    };
+
     // Fetch group details based on the groupId
     const fetchGroupDetails = async () => {
         try {
             const response = await axios.get(`http://localhost:8080/group/api/group/id/${groupId}`);
             setGroup(response.data);
+
+            // Fetch usernames for group members once
+            const userIds = response.data.userIds;
+            fetchUsernamesOnce(userIds);
         } catch (error) {
             console.error("Error fetching group details:", error);
-        }
-    };
-
-    // Fetch usernames for a list of userIds
-    const fetchUsernames = async (userIds) => {
-        try {
-            const usernameMap = { ...usernames };
-            const fetchPromises = userIds
-                .filter((id) => !usernameMap[id]) // Avoid refetching existing usernames
-                .map(async (id) => {
-                    const response = await axios.get(`http://localhost:8080/user/api/users/specific/${id}`);
-                    return { id, username: response.data.username };
-                });
-
-            const results = await Promise.all(fetchPromises);
-            results.forEach(({ id, username }) => {
-                usernameMap[id] = username;
-            });
-
-            setUsernames(usernameMap);
-        } catch (error) {
-            console.error("Error fetching usernames:", error);
         }
     };
 
     // Fetch chat messages for the group
     const fetchMessages = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/communication/api/conversations/${groupId}/messages`);
+            const response = await axios.get(
+                `http://localhost:8080/communication/api/conversations/${groupId}/messages`
+            );
             setMessages(response.data);
 
-            // Extract unique senderIds and fetch their usernames
+            // Extract unique senderIds and fetch their usernames once
             const senderIds = [...new Set(response.data.map((msg) => msg.senderId))];
-            await fetchUsernames(senderIds);
+            fetchUsernamesOnce(senderIds);
         } catch (error) {
             console.error("Error fetching messages:", error);
         }
@@ -73,14 +77,9 @@ const GroupOverviewComponent = () => {
             onConnect: () => {
                 console.log("Connected to WebSocket");
 
-                stompClient.subscribe(`/topic/conversations/${groupId}`, async (message) => {
+                stompClient.subscribe(`/topic/conversations/${groupId}`, (message) => {
                     const receivedMessage = JSON.parse(message.body);
                     console.log("Received message:", receivedMessage);
-
-                    // Fetch username for the senderId of the new message
-                    if (!usernames[receivedMessage.senderId]) {
-                        await fetchUsernames([receivedMessage.senderId]);
-                    }
 
                     // Add the message to the state
                     setMessages((prevMessages) => {
@@ -131,21 +130,10 @@ const GroupOverviewComponent = () => {
         }
     };
 
-    // Scroll down whenever messages change
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
-
     useEffect(() => {
         fetchGroupDetails();
         fetchMessages();
     }, [groupId]);
-
-    useEffect(() => {
-        if (group && group.userIds) {
-            fetchUsernames(group.userIds);
-        }
-    }, [group]);
 
     useEffect(() => {
         connectWebSocket();
@@ -155,6 +143,10 @@ const GroupOverviewComponent = () => {
             }
         };
     }, [groupId]);
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
     return (
         <div className="group-overview-component">

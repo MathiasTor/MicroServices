@@ -131,4 +131,8 @@ public class PlayPalUserService {
         System.out.println(userId);
         return user.map(PlayPalUser::getUsername).orElse(null);
     }
+
+    public List<PlayPalUser> getBulkUsers(List<Long> userIds) {
+        return playPalUserRepository.findAllById(userIds);
+    }
 }

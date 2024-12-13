@@ -103,8 +103,9 @@ public class PlayPalUserController {
         }
     }
 
-
-
-
+    @PostMapping("/bulk")
+    public ResponseEntity<List<PlayPalUser>> getBulkUsers(@RequestBody List<Long> userIds) {
+        return ResponseEntity.ok(playPalUserService.getBulkUsers(userIds));
+    }
 
 }

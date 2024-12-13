@@ -19,24 +19,27 @@ const DirectMessageComponent = () => {
 
     const userId = Cookies.get("userid");
 
-    // Fetch usernames for the provided user IDs
-    const fetchUsernames = async (userIds) => {
+    // Fetch all usernames for a list of user IDs
+    const fetchUsernamesOnce = async (userIds) => {
         try {
-            if (!userIds) return;
-            const usernameMap = { ...usernames };
-            const fetchPromises = userIds
-                .filter((id) => !usernameMap[id])
-                .map(async (id) => {
-                    const response = await axios.get(`http://localhost:8080/user/api/users/specific/${id}`);
-                    return { id, username: response.data.username };
-                });
+            if (!userIds || userIds.length === 0) return;
 
-            const results = await Promise.all(fetchPromises);
-            results.forEach(({ id, username }) => {
-                usernameMap[id] = username;
-            });
+            const response = await axios.post(
+                "http://localhost:8080/user/api/users/bulk",
+                userIds,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
-            setUsernames(usernameMap);
+            const usernameMap = response.data.reduce((map, user) => {
+                map[user.id] = user.username;
+                return map;
+            }, {});
+
+            setUsernames((prevUsernames) => ({ ...prevUsernames, ...usernameMap }));
         } catch (error) {
             console.error("Error fetching usernames:", error);
         }
@@ -49,7 +52,7 @@ const DirectMessageComponent = () => {
             setConversation(response.data);
 
             const allUserIds = response.data?.userIds || [];
-            fetchUsernames(allUserIds);
+            await fetchUsernamesOnce(allUserIds);
         } catch (error) {
             console.error("Error fetching conversation details:", error);
         }
@@ -150,63 +153,63 @@ const DirectMessageComponent = () => {
     return (
         <div className="dm-content">
             <TopBar />
-        <div className="chat-section">
-            <h2 className="chat-header">Direct Messages</h2>
-            {conversation ? (
-                <div className="chat-messages-section">
-                    <h3 className="chat-with">
-                        Chat with{" "}
-                        {conversation.userIds?.filter((id) => String(id) !== String(userId))
-                            .map((id) => usernames[id] || `User ${id}`)
-                            .join(", ") || "Loading..."}
-                    </h3>
-                    <div className="chat-messages">
-                        {messages.length === 0 ? (
-                            <p>No messages yet.</p>
-                        ) : (
-                            messages.map((msg) => (
-                                <div
-                                    key={msg.id}
-                                    className={`chat-message ${
-                                        String(msg.senderId) === String(userId)
-                                            ? "chat-message-right"
-                                            : "chat-message-left"
-                                    }`}
-                                >
-                                    <strong>
-                                        {String(msg.senderId) === String(userId)
-                                            ? "You"
-                                            : usernames[msg.senderId] || `User ${msg.senderId}`}
-                                        :
-                                    </strong>{" "}
-                                    {msg.content}
-                                </div>
-                            ))
-                        )}
-                        <div ref={messagesEndRef} />
+            <div className="chat-section">
+                <h2 className="chat-header">Direct Messages</h2>
+                {conversation ? (
+                    <div className="chat-messages-section">
+                        <h3 className="chat-with">
+                            Chat with{" "}
+                            {conversation.userIds?.filter((id) => String(id) !== String(userId))
+                                .map((id) => usernames[id] || `User ${id}`)
+                                .join(", ") || "Loading..."}
+                        </h3>
+                        <div className="chat-messages">
+                            {messages.length === 0 ? (
+                                <p>No messages yet.</p>
+                            ) : (
+                                messages.map((msg) => (
+                                    <div
+                                        key={msg.id}
+                                        className={`chat-message ${
+                                            String(msg.senderId) === String(userId)
+                                                ? "chat-message-right"
+                                                : "chat-message-left"
+                                        }`}
+                                    >
+                                        <strong>
+                                            {String(msg.senderId) === String(userId)
+                                                ? "You"
+                                                : usernames[msg.senderId] || `User ${msg.senderId}`}
+                                            :
+                                        </strong>{" "}
+                                        {msg.content}
+                                    </div>
+                                ))
+                            )}
+                            <div ref={messagesEndRef} />
+                        </div>
+                        <div className="chat-input">
+                            <input
+                                type="text"
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                placeholder="Type a message..."
+                                className="chat-input-box"
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        sendMessage();
+                                    }
+                                }}
+                            />
+                            <button onClick={sendMessage} className="chat-send-button">
+                                Send
+                            </button>
+                        </div>
                     </div>
-                    <div className="chat-input">
-                        <input
-                            type="text"
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            placeholder="Type a message..."
-                            className="chat-input-box"
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    sendMessage();
-                                }
-                            }}
-                        />
-                        <button onClick={sendMessage} className="chat-send-button">
-                            Send
-                        </button>
-                    </div>
-                </div>
-            ) : (
-                <p>Loading conversation...</p>
-            )}
-        </div>
+                ) : (
+                    <p>Loading conversation...</p>
+                )}
+            </div>
             <BottomBar />
         </div>
     );
