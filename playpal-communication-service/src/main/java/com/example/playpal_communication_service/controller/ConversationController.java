@@ -13,6 +13,7 @@ import java.util.List;
 @RequestMapping("/api/conversations")
 @RequiredArgsConstructor
 @Slf4j
+@CrossOrigin("http://localhost:3000")
 public class ConversationController {
 
     private final ConversationService conversationService;

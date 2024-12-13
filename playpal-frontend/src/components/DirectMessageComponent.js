@@ -71,7 +71,7 @@ const DirectMessageComponent = () => {
     const connectWebSocket = () => {
         if (!dmId) return;
 
-        const socket = new SockJS("http://localhost:8085/ws");
+        const socket = new SockJS("http://localhost:8080/communication/ws/");
         const stompClient = new Client({
             webSocketFactory: () => socket,
             debug: (str) => console.log(str),

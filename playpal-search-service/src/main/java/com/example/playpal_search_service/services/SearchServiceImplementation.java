@@ -25,7 +25,7 @@ public class SearchServiceImplementation implements SearchService {
 
     private final SearchRepository repository;
     private final UserClient userClient;
-    private final SearchEventPublisher searchEventPublisher; // Inject UserClient
+    private final SearchEventPublisher searchEventPublisher;
 
     @Override
     public SearchPostDTO createPost(SearchPostDTO postDTO) {

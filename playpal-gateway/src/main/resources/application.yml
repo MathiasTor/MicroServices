@@ -23,9 +23,9 @@ spring:
           enabled: true # Enable dynamic discovery-based routing
       globalcors:
         cors-configurations:
-          '[/**]': # Apply CORS to all routes
+          '[/user/**]': # Apply CORS to user-service routes
             allowedOrigins:
-              - "http://localhost:3000" # Add the allowed origin(s) here
+              - "http://localhost:3000"
             allowedMethods:
               - "GET"
               - "POST"
@@ -36,7 +36,120 @@ spring:
               - "*"
             exposedHeaders:
               - "*"
-            allowCredentials: true # Allow cookies or credentials
+            allowCredentials: true
+          '[/runescape/**]': # Apply CORS to runescape-service routes
+            allowedOrigins:
+              - "http://localhost:3000"
+            allowedMethods:
+              - "GET"
+              - "POST"
+              - "PUT"
+              - "DELETE"
+              - "OPTIONS"
+            allowedHeaders:
+              - "*"
+            exposedHeaders:
+              - "*"
+            allowCredentials: true
+          '[/search/**]': # Apply CORS to search-service routes
+            allowedOrigins:
+              - "http://localhost:3000"
+            allowedMethods:
+              - "GET"
+              - "POST"
+              - "PUT"
+              - "DELETE"
+              - "OPTIONS"
+            allowedHeaders:
+              - "*"
+            exposedHeaders:
+              - "*"
+            allowCredentials: true
+          '[/livesearch/**]': # Apply CORS to livesearch-service routes
+            allowedOrigins:
+              - "http://localhost:3000"
+            allowedMethods:
+              - "GET"
+              - "POST"
+              - "PUT"
+              - "DELETE"
+              - "OPTIONS"
+            allowedHeaders:
+              - "*"
+            exposedHeaders:
+              - "*"
+            allowCredentials: true
+          '[/livesearch2/**]': # Apply CORS to livesearch-service2 routes
+            allowedOrigins:
+              - "http://localhost:3000"
+            allowedMethods:
+              - "GET"
+              - "POST"
+              - "PUT"
+              - "DELETE"
+              - "OPTIONS"
+            allowedHeaders:
+              - "*"
+            exposedHeaders:
+              - "*"
+            allowCredentials: true
+
+          '[/friend/**]': # Apply CORS to friend-service routes
+            allowedOrigins:
+              - "http://localhost:3000"
+            allowedMethods:
+              - "GET"
+              - "POST"
+              - "PUT"
+              - "DELETE"
+              - "OPTIONS"
+            allowedHeaders:
+              - "*"
+            exposedHeaders:
+              - "*"
+            allowCredentials: true
+          '[/profile/**]': # Apply CORS to profile-service routes
+            allowedOrigins:
+              - "http://localhost:3000"
+            allowedMethods:
+              - "GET"
+              - "POST"
+              - "PUT"
+              - "DELETE"
+              - "OPTIONS"
+            allowedHeaders:
+              - "*"
+            exposedHeaders:
+              - "*"
+            allowCredentials: true
+          '[/leaderboard/**]': # Apply CORS to leaderboard-service routes
+            allowedOrigins:
+              - "http://localhost:3000"
+            allowedMethods:
+              - "GET"
+              - "POST"
+              - "PUT"
+              - "DELETE"
+              - "OPTIONS"
+            allowedHeaders:
+              - "*"
+            exposedHeaders:
+              - "*"
+            allowCredentials: true
+          '[/group/**]': # Apply CORS to leaderboard-service routes
+            allowedOrigins:
+              - "http://localhost:3000"
+            allowedMethods:
+              - "GET"
+              - "POST"
+              - "PUT"
+              - "DELETE"
+              - "OPTIONS"
+            allowedHeaders:
+              - "*"
+            exposedHeaders:
+              - "*"
+            allowCredentials: true
       routes:
         - id: group-service
           uri: lb://group-service
@@ -44,54 +157,63 @@ spring:
             - Path=/group/**
           filters:
             - StripPrefix=1
+
         - id: user-service
           uri: lb://user-service
           predicates:
             - Path=/user/**
           filters:
             - StripPrefix=1
+
         - id: runescape-service
           uri: lb://runescape-service
           predicates:
             - Path=/runescape/**
           filters:
             - StripPrefix=1
+
         - id: search-service
           uri: lb://search-service
           predicates:
             - Path=/search/**
           filters:
             - StripPrefix=1
+
         - id: livesearch-service
           uri: lb://livesearch-service
           predicates:
             - Path=/livesearch/**
           filters:
             - StripPrefix=1
+
         - id: livesearch-service2
           uri: lb://livesearch-service2
           predicates:
             - Path=/livesearch2/**
           filters:
             - StripPrefix=1
+
         - id: communication-service
           uri: lb://communication-service
           predicates:
             - Path=/communication/**
           filters:
             - StripPrefix=1
+
         - id: friend-service
           uri: lb://friend-service
           predicates:
             - Path=/friend/**
           filters:
             - StripPrefix=1
+
         - id: profile-service
           uri: lb://profile-service
           predicates:
             - Path=/profile/**
           filters:
             - StripPrefix=1
+
         - id: leaderboard-service
           uri: lb://leaderboard-service
           predicates:
