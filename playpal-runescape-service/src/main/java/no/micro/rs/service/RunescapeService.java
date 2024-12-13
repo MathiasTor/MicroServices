@@ -178,6 +178,11 @@ public class RunescapeService {
             return;
         }
 
+        if(runescapeRepository.findByRunescapeName(runescapeName) != null) {
+            logger.error("RuneScape character already exists in the database.");
+            return;
+        }
+
         RunescapeChar runescapeChar = new RunescapeChar();
         runescapeChar.setRunescapeName(runescapeName);
         runescapeChar.setUserId(userid);
