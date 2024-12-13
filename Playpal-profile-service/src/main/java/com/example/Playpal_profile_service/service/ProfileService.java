@@ -36,11 +36,6 @@ public class ProfileService {
             throw new RuntimeException("Profile doesnt exist: " + userId );
         }
 
-        // Update name
-        if (updatedProfile.getName() != null && !updatedProfile.getName().isEmpty()) {
-
-            existingProfile.setName(updatedProfile.getName());
-        }
 
         // Update bio
         if (updatedProfile.getBio() != null) {

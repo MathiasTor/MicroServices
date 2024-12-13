@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/profiles")
+@RequestMapping("/api/profiles")
 public class ProfileController {
 
     @Autowired
@@ -29,6 +29,7 @@ public class ProfileController {
             @RequestBody PlaypalProfile updatedProfile) {
         return ResponseEntity.ok(profileService.updateProfile(userId, updatedProfile));
     }
+
 
     @PostMapping("/{profileId}/vote")
     public ResponseEntity<PlaypalProfile> castVote(

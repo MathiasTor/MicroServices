@@ -28,7 +28,6 @@ public class ProfileEventHandler {
     }
 
 
-
     // Converter method
     private PlaypalProfile convertToPlaypalProfile(ProfileDTO profileDTO) {
         PlaypalProfile playpalProfile = new PlaypalProfile();
