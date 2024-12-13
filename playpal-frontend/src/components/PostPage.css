@@ -214,3 +214,11 @@ textarea {
     color: #333;
 }
 
+.create-post-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-left: 45%;
+}
+

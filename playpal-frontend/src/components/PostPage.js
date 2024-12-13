@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import "./PostPage.css";
 import TopBar from "./TopBar";
 import BottomBar from "./BottomBar";
+import LiveSearch from "./LiveSearch";
 
 const PostPage = () => {
     const [showForm, setShowForm] = useState(false);
@@ -172,138 +173,147 @@ const PostPage = () => {
 
     return (
         <div className="container">
-            <div className="top-section">
-                <TopBar />
-                <button onClick={() => setShowForm(!showForm)}>
-                    {showForm ? "Cancel" : "Create Post"}
-                </button>
-            </div>
-            <div className="main-content">
-                {showForm && (
-                    <form onSubmit={handleFormSubmit} className="form-container">
-                        <label>Title:</label>
-                        <input
-                            type="text"
-                            value={formData.title}
-                            onChange={(e) =>
-                                setFormData({ ...formData, title: e.target.value })
-                            }
-                            required
-                        />
-                        <label>Description:</label>
-                        <textarea
-                            value={formData.description}
-                            onChange={(e) =>
-                                setFormData({ ...formData, description: e.target.value })
-                            }
-                            required
-                        />
-                        <label>Tags (comma-separated):</label>
-                        <input
-                            type="text"
-                            value={formData.tags}
-                            onChange={(e) =>
-                                setFormData({ ...formData, tags: e.target.value })
-                            }
-                        />
-                        <button type="submit">Submit</button>
-                    </form>
-                )}
-
-                <h3>Posts</h3>
-                {posts.slice().reverse().map((post) => (
-                    <div key={post.id} className="post">
-                        {post.live && <span className="live-indicator">Active</span>}
-                        <h4>{post.title}</h4>
-                        <p>{post.description}</p>
-                        <p>
-                            Created by: <UsernameLink userId={post.userId} />
-                        </p>
-                        <small>Tags: {post.tags}</small>
-
-                        <div className="approved-users-section">
-                            <h5>Approved Users:</h5>
-                            {post.approvedUsers && post.approvedUsers.length > 0 ? (
-                                post.approvedUsers.map((user, index) => (
-                                    <div key={`${user.id}-${index}`} className="approved-user">
-                                        <UsernameLink userId={user.id} />
+            <TopBar />
+            <div className="page-content">
+                {/* Left Column */}
+                <div className="left-column">
+                    <button className="create-post-button" onClick={() => setShowForm(!showForm)}>
+                        {showForm ? "Cancel" : "Create Post"}
+                    </button>
+                    <div className="main-content">
+                        {showForm && (
+                            <form onSubmit={handleFormSubmit} className="form-container">
+                                <label>Title:</label>
+                                <input
+                                    type="text"
+                                    value={formData.title}
+                                    onChange={(e) =>
+                                        setFormData({ ...formData, title: e.target.value })
+                                    }
+                                    required
+                                />
+                                <label>Description:</label>
+                                <textarea
+                                    value={formData.description}
+                                    onChange={(e) =>
+                                        setFormData({ ...formData, description: e.target.value })
+                                    }
+                                    required
+                                />
+                                <label>Tags (comma-separated):</label>
+                                <input
+                                    type="text"
+                                    value={formData.tags}
+                                    onChange={(e) =>
+                                        setFormData({ ...formData, tags: e.target.value })
+                                    }
+                                />
+                                <button type="submit">Submit</button>
+                            </form>
+                        )}
+                        <h3>Posts</h3>
+                        {posts.slice().reverse().map((post) => (
+                            <div key={post.id} className="post">
+                                {post.live && <span className="live-indicator">Active</span>}
+                                <h4>{post.title}</h4>
+                                <p>{post.description}</p>
+                                <p>
+                                    Created by: <UsernameLink userId={post.userId} />
+                                </p>
+                                <small>Tags: {post.tags}</small>
+                                {/* Approved Users */}
+                                <div className="approved-users-section">
+                                    <h5>Approved Users:</h5>
+                                    {post.approvedUsers && post.approvedUsers.length > 0 ? (
+                                        post.approvedUsers.map((user, index) => (
+                                            <div
+                                                key={`${user.id}-${index}`}
+                                                className="approved-user"
+                                            >
+                                                <UsernameLink userId={user.id} />
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p>No approved users yet.</p>
+                                    )}
+                                </div>
+                                {/* Actions */}
+                                {parseInt(userId, 10) === post.userId && post.live && (
+                                    <button
+                                        className="stop-search-button"
+                                        onClick={() => stopSearch(post.id)}
+                                    >
+                                        Stop Search
+                                    </button>
+                                )}
+                                {post.live && parseInt(userId, 10) !== post.userId && (
+                                    <button
+                                        className="apply-button"
+                                        onClick={() => applyToPost(post.id, parseInt(userId, 10))}
+                                    >
+                                        Apply
+                                    </button>
+                                )}
+                                {parseInt(userId, 10) === post.userId && (
+                                    <div className="applicants-section">
+                                        <h5>Applicants:</h5>
+                                        {post.applicants && post.applicants.length > 0 ? (
+                                            post.applicants.map((applicant) => (
+                                                <div
+                                                    key={applicant.id}
+                                                    className="applicant"
+                                                >
+                                                    <UsernameLink userId={applicant.id} />
+                                                    <button
+                                                        className="approve-button"
+                                                        onClick={() =>
+                                                            approveUser(post.id, applicant.id)
+                                                        }
+                                                    >
+                                                        Approve
+                                                    </button>
+                                                    <button
+                                                        className="disapprove-button"
+                                                        onClick={() =>
+                                                            disapproveUser(post.id, applicant.id)
+                                                        }
+                                                    >
+                                                        Disapprove
+                                                    </button>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p>No applicants yet.</p>
+                                        )}
                                     </div>
-                                ))
-                            ) : (
-                                <p>No approved users yet.</p>
-                            )}
-                        </div>
-
-                        {parseInt(userId, 10) === post.userId && post.live && (
-                            <button
-                                className="stop-search-button"
-                                onClick={() => stopSearch(post.id)}
-                            >
-                                Stop Search
-                            </button>
-                        )}
-
-                        {post.live && parseInt(userId, 10) !== post.userId && (
-                            <button
-                                className="apply-button"
-                                onClick={() => applyToPost(post.id, parseInt(userId, 10))}
-                            >
-                                Apply
-                            </button>
-                        )}
-
-                        {parseInt(userId, 10) === post.userId && (
-                            <div className="applicants-section">
-                                <h5>Applicants:</h5>
-                                {post.applicants && post.applicants.length > 0 ? (
-                                    post.applicants.map((applicant) => (
-                                        <div key={applicant.id} className="applicant">
-                                            <UsernameLink userId={applicant.id} />
-                                            <button
-                                                className="approve-button"
-                                                onClick={() =>
-                                                    approveUser(post.id, applicant.id)
-                                                }
-                                            >
-                                                Approve
-                                            </button>
-                                            <button
-                                                className="disapprove-button"
-                                                onClick={() =>
-                                                    disapproveUser(post.id, applicant.id)
-                                                }
-                                            >
-                                                Disapprove
-                                            </button>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>No applicants yet.</p>
                                 )}
                             </div>
-                        )}
+                        ))}
+                        {/* Pagination */}
+                        <div className="pagination">
+                            <button
+                                onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+                                disabled={page === 0}
+                            >
+                                Previous
+                            </button>
+                            <span>
+                                Page {page + 1} of {totalPages}
+                            </span>
+                            <button
+                                onClick={() =>
+                                    setPage((prev) => (prev + 1 < totalPages ? prev + 1 : prev))
+                                }
+                                disabled={page + 1 >= totalPages}
+                            >
+                                Next
+                            </button>
+                        </div>
                     </div>
-                ))}
-                <div className="pagination">
-                    <button
-                        onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-                        disabled={page === 0}
-                    >
-                        Previous
-                    </button>
-                    <span>
-                        Page {page + 1} of {totalPages}
-                    </span>
-                    <button
-                        onClick={() =>
-                            setPage((prev) =>
-                                prev + 1 < totalPages ? prev + 1 : prev
-                            )
-                        }
-                        disabled={page + 1 >= totalPages}
-                    >
-                        Next
-                    </button>
+                </div>
+                {/* Right Column */}
+                <div className="right-column">
+                    <LiveSearch />
                 </div>
             </div>
             <BottomBar />

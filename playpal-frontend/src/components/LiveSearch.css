@@ -80,3 +80,18 @@ h2 {
 .user-info {
     margin: 5px 0;
 }
+.page-content {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.left-column {
+    flex: 3;
+}
+
+.right-column {
+    flex: 1;
+    border-left: 1px solid #ddd;
+    padding-left: 20px;
+}

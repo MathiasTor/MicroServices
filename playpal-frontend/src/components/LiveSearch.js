@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 import './LiveSearch.css';
 
 const LiveSearch = () => {
     const userId = cookies.get('userid'); // Assuming a cookie holds the user ID
+    const navigate = useNavigate();
 
     const [liveUsers, setLiveUsers] = useState([]);
     const [isLive, setIsLive] = useState(false);
     const [loading, setLoading] = useState(false);
     const [matchMessage, setMatchMessage] = useState('');
-    const [liveUserSearchId, setLiveUserSearchId] = useState(null); // Store the ID of the LiveUserSearch
+    const [liveUserSearchId, setLiveUserSearchId] = useState(null);
+    const [groupInfo, setGroupInfo] = useState(null); // State to store group information
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -50,6 +53,7 @@ const LiveSearch = () => {
                 if (isMatched) {
                     setMatchMessage('Match found! You are successfully matched.');
                     clearInterval(pollInterval); // Stop polling if a match is found
+                    fetchGroupInfo(); // Fetch the latest group info
                 }
             } catch (error) {
                 console.error('Error polling match status:', error);
@@ -57,8 +61,23 @@ const LiveSearch = () => {
         };
 
         const pollInterval = setInterval(pollMatchStatus, 5000);
-        return () => clearInterval(pollInterval); // Cleanup polling interval when component unmounts or liveUserSearchId changes
+        return () => clearInterval(pollInterval);
     }, [liveUserSearchId]);
+
+    const fetchGroupInfo = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/group/api/group/latest/${userId}`);
+            setGroupInfo(response.data); // Save group info to state
+        } catch (error) {
+            console.error('Error fetching group info:', error);
+        }
+    };
+
+    const handleGroupRedirect = () => {
+        if (groupInfo) {
+            navigate(`/groups/${groupInfo.groupID}`);
+        }
+    };
 
     const goLive = async () => {
         setLoading(true);
@@ -73,6 +92,7 @@ const LiveSearch = () => {
                 // Set a message based on initial response
                 if (data.userId !== 0 && data.matchedUserId !== 0) {
                     setMatchMessage(`Match found immediately! You are matched with User ID: ${data.matchedUserId}`);
+                    fetchGroupInfo(); // Fetch the latest group info immediately
                 } else {
                     setMatchMessage('You are now live and waiting for a match...');
                 }
@@ -123,6 +143,12 @@ const LiveSearch = () => {
             {matchMessage && (
                 <div className="match-message">
                     {matchMessage}
+                </div>
+            )}
+            {groupInfo && (
+                <div className="group-info-box">
+                    <button onClick={handleGroupRedirect}>Go to Group Overview</button>
+                    <p>Group Name: {groupInfo.groupName}</p>
                 </div>
             )}
             <button
