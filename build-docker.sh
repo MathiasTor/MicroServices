@@ -12,6 +12,7 @@ keys=(
   "user-service"
   "gateway"
   "frontend"
+  "livesearch-service"
 )
 
 values=(
@@ -25,6 +26,8 @@ values=(
   "playpal-user-service"
   "playpal-gateway"
   "playpal-frontend"
+  "playpal-livesearch-service"
+
 )
 
 # Docker image version for services

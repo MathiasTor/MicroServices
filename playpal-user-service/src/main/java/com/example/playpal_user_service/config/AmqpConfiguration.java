@@ -11,25 +11,25 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AmqpConfiguration {
 
-    // Define the exchange
     @Bean
     public TopicExchange profileTopicExchange(
             @Value("${amqp.exchange.name}") final String exchangeName) {
+        // Declares a topic exchange; will not recreate if it already exists
         return ExchangeBuilder.topicExchange(exchangeName).durable(true).build();
     }
 
-    // Define the queue for group creation events
     @Bean
     public Queue profileCreatedQueue(
             @Value("${amqp.queue.created.name}") final String queueName) {
+        // Declares a durable queue; will not recreate if it already exists
         return QueueBuilder.durable(queueName).build();
     }
 
-    // Bind the queue to the exchange with a routing key
     @Bean
     public Binding profileCreatedBinding(
             Queue profileCreatedQueue,
             TopicExchange profileTopicExchange) {
+        // Declares the binding; will not recreate if it already exists
         return BindingBuilder
                 .bind(profileCreatedQueue)
                 .to(profileTopicExchange)

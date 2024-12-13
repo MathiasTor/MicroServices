@@ -2,6 +2,23 @@ version: '3.8'
 
 services:
 
+
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    restart: unless-stopped
+    networks:
+      - playpal-network
+    ports:
+      - "9090:8080"
+    environment:
+      DOZZLE_LEVEL: info
+      DOZZLE_TAILSIZE: 300
+      DOZZLE_FILTER: "status=running"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+
   # Consul Service
   consul:
     image: hashicorp/consul:1.19.2
@@ -11,6 +28,8 @@ services:
     networks:
       - playpal-network
     command: "agent -dev -client=0.0.0.0"
+    labels:
+      - dev.dozzle.group=Configs
 
   # Consul Importer Service
   consul-importer:
@@ -20,6 +39,8 @@ services:
       - consul
     networks:
       - playpal-network
+    labels:
+      - dev.dozzle.group=Configs
 
   # RabbitMQ Service
   rabbitmq:
@@ -30,11 +51,13 @@ services:
       - "15672:15672" # Management console
     networks:
       - playpal-network
+    labels:
+      - dev.dozzle.group=Configs
 
 
   # Profile Service
   profile-service:
-    container_name: profile-service-container
+    container_name: profile
     image: profile-service:1.0
     ports:
       - "3001:3001"
@@ -47,10 +70,12 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_CONSUL_HOST=consul
+    labels:
+      - dev.dozzle.group=myapp
 
   # Communication Service
   communication-service:
-    container_name: communication-service-container
+    container_name: communication
     image: communication-service:1.0
     ports:
       - "3002:3002"
@@ -62,10 +87,12 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_CONSUL_HOST=consul
+    labels:
+      - dev.dozzle.group=myapp
 
   # Friend Service
   friend-service:
-    container_name: friend-service-container
+    container_name: friend
     image: friend-service:1.0
     ports:
       - "3003:3003"
@@ -77,10 +104,12 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_CONSUL_HOST=consul
+    labels:
+      - dev.dozzle.group=myapp
 
   # Group Service
   group-service:
-    container_name: group-service-container
+    container_name: group
     image: group-service:1.0
     ports:
       - "3005:3005"
@@ -92,10 +121,12 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_CONSUL_HOST=consul
+    labels:
+      - dev.dozzle.group=myapp
 
   # Leaderboard service
   leaderboard-service:
-    container_name: leaderboard-service-container
+    container_name: leaderboard
     image: leaderboard-service:1.0
     ports:
       - "3012:3012"
@@ -107,10 +138,12 @@ services:
     environment:
     - SPRING_PROFILES_ACTIVE=docker
     - SPRING_CLOUD_CONSUL_HOST=consul
+    labels:
+      - dev.dozzle.group=EndlessFetch
 
   # Runescape Service
   runescape-service:
-    container_name: runescape-service-container
+    container_name: runescape
     image: runescape-service:1.0
     ports:
       - "3006:3006"
@@ -122,10 +155,12 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_CONSUL_HOST=consul
+    labels:
+      - dev.dozzle.group=myapp
 
   # Search Service
   search-service:
-    container_name: search-service-container
+    container_name: search
     image: search-service:1.0
     ports:
       - "3007:3007"
@@ -137,10 +172,29 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_CONSUL_HOST=consul
+    labels:
+      - dev.dozzle.group=myapp
+
+  # Livesearch Service
+  livesearch-service:
+    container_name: livesearch
+    image: livesearch-service:1.0
+    ports:
+      - "3040:3040"
+    networks:
+      - playpal-network
+    depends_on:
+      - consul
+      - rabbitmq
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONSUL_HOST=consul
+    labels:
+      - dev.dozzle.group=myapp
 
   # User Service
   user-service:
-    container_name: user-service-container
+    container_name: user
     image: user-service:1.0
     ports:
       - "3008:3008"
@@ -152,10 +206,12 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_CONSUL_HOST=consul
+    labels:
+      - dev.dozzle.group=myapp
 
   # Gateway Service
   gateway:
-    container_name: gateway-container
+    container_name: gateway
     image: gateway:1.0
     ports:
       - "8080:8080"
@@ -167,6 +223,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_CONSUL_HOST=consul
+    labels:
+      - dev.dozzle.group=myapp
 
   # Frontend Service
   frontend:
@@ -176,6 +234,7 @@ services:
       - "3000:80"
     networks:
       - playpal-network
+    working_dir: /app
 
 
 networks:
