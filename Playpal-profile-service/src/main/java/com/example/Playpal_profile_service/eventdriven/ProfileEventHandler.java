@@ -23,6 +23,12 @@ public class ProfileEventHandler {
         // Convert ProfileDTO to PlaypalProfile
         PlaypalProfile playpalProfile = convertToPlaypalProfile(profileDTO);
 
+        //Check if the profile already exists
+        if (profileService.profileExists(playpalProfile.getUserId())) {
+            log.error("Profile already exists for user: {}", playpalProfile.getUserId());
+            return;
+        }
+
         // Call service to create the profile
         profileService.createProfile(playpalProfile);
     }
