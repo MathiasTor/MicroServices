@@ -26,10 +26,7 @@ public class GroupEventHandler {
 
         // Create a new conversation for the group participants
         try {
-            ConversationDTO conversation = conversationService.createConversation(
-                    groupDTO.getUserIds(),
-                    groupDTO.getGroupName()
-            );
+            ConversationDTO conversation = conversationService.createConversation(groupDTO.getUserIds(), groupDTO.getGroupName(), groupDTO.getGroupId());
             log.info("Conversation created: {}", conversation);
         } catch (Exception e) {
             log.error("Failed to create conversation for group {}: {}", groupDTO.getGroupId(), e.getMessage());

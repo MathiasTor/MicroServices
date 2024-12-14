@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ConversationRepository extends JpaRepository<Conversation, Long> {
     List<Conversation> findByUserIdsContains(Long participantId);
+
+    Conversation findByGroupId(Long groupId);
 }

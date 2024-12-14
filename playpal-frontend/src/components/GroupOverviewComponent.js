@@ -18,6 +18,8 @@ const GroupOverviewComponent = () => {
     const messagesEndRef = useRef(null);
     const stompClientRef = useRef(null);
     const userId = Cookies.get("userid");
+    const [conversationId, setConversationId] = useState(null);
+
 
     // Fetch usernames for a list of userIds once
     const fetchUsernamesOnce = async (userIds) => {
@@ -42,14 +44,21 @@ const GroupOverviewComponent = () => {
     // Fetch group details based on the groupId
     const fetchGroupDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/group/api/group/id/${groupId}`);
-            setGroup(response.data);
+            // Fetch group details
+            const groupResponse = await axios.get(`http://localhost:8080/group/api/group/id/${groupId}`);
+            setGroup(groupResponse.data);
 
-            // Fetch usernames for group members once
-            const userIds = response.data.userIds;
+            // Fetch usernames for group members
+            const userIds = groupResponse.data.userIds;
             fetchUsernamesOnce(userIds);
+
+            // Fetch conversationId for the group
+            const conversationResponse = await axios.get(
+                `http://localhost:8080/communication/api/conversations/group/${groupId}`
+            );
+            setConversationId(conversationResponse.data.id); // Assuming the response contains an "id" field
         } catch (error) {
-            console.error("Error fetching group details:", error);
+            console.error("Error fetching group or conversation details:", error);
         }
     };
 
@@ -57,7 +66,7 @@ const GroupOverviewComponent = () => {
     const fetchMessages = async () => {
         try {
             const response = await axios.get(
-                `http://localhost:8080/communication/api/conversations/${groupId}/messages`
+                `http://localhost:8080/communication/api/conversations/group/${groupId}/messages`
             );
             setMessages(response.data);
 
@@ -113,16 +122,17 @@ const GroupOverviewComponent = () => {
             onConnect: () => {
                 console.log("Connected to WebSocket");
 
-                stompClient.subscribe(`/topic/conversations/${groupId}`, (message) => {
-                    const receivedMessage = JSON.parse(message.body);
-                    console.log("Received message:", receivedMessage);
+                if (conversationId) {
+                    stompClient.subscribe(`/topic/conversations/${conversationId}`, (message) => {
+                        const receivedMessage = JSON.parse(message.body);
+                        console.log("Received message:", receivedMessage);
 
-                    // Add the message to the state
-                    setMessages((prevMessages) => {
-                        const exists = prevMessages.some((msg) => msg.id === receivedMessage.id);
-                        return exists ? prevMessages : [...prevMessages, receivedMessage];
+                        setMessages((prevMessages) => {
+                            const exists = prevMessages.some((msg) => msg.id === receivedMessage.id);
+                            return exists ? prevMessages : [...prevMessages, receivedMessage];
+                        });
                     });
-                });
+                }
             },
         });
 
@@ -136,18 +146,17 @@ const GroupOverviewComponent = () => {
         };
     };
 
-    // Send a new message
     const sendMessage = () => {
         const stompClient = stompClientRef.current;
-        if (stompClient && stompClient.connected) {
+        if (stompClient && stompClient.connected && conversationId) {
             const messageDTO = {
-                conversationId: groupId,
+                conversationId,
                 senderId: userId,
                 content: newMessage,
             };
 
             stompClient.publish({
-                destination: `/api/sendMessage/${groupId}`,
+                destination: `/api/sendMessage/${conversationId}`,
                 body: JSON.stringify(messageDTO),
             });
 
@@ -155,9 +164,20 @@ const GroupOverviewComponent = () => {
 
             setNewMessage("");
         } else {
-            console.error("Cannot send message: WebSocket is not connected.");
+            console.error("Cannot send message: WebSocket is not connected or conversationId is missing.");
         }
     };
+
+    useEffect(() => {
+        if (conversationId) {
+            connectWebSocket();
+            return () => {
+                if (stompClientRef.current) {
+                    stompClientRef.current.deactivate();
+                }
+            };
+        }
+    }, [conversationId]);
 
     // Scroll to the bottom of the chat
     const scrollToBottom = () => {

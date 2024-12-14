@@ -19,9 +19,9 @@ public class ConversationController {
     private final ConversationService conversationService;
 
     @PostMapping
-    public ConversationDTO createConversation(@RequestBody List<Long> userIds, String groupName) {
+    public ConversationDTO createConversation(@RequestBody List<Long> userIds, String groupName, Long groupId) {
         log.info("Creating conversation with participants: {}", userIds);
-        return conversationService.createConversation(userIds, groupName);
+        return conversationService.createConversation(userIds, groupName, groupId);
     }
 
     //Create a dm conversation
@@ -83,5 +83,15 @@ public class ConversationController {
         return conversationService.getMessagesInConversation(conversationId, page, size);
     }
 
+    //Get conversationId for groupID
+    @GetMapping("/group/{groupId}")
+    public ConversationDTO getGroupForConvo(@PathVariable Long groupId){
+        return conversationService.findByGroupId(groupId);
+    }
 
+    //Get messages for group
+    @GetMapping("/group/{groupId}/messages")
+    public List<MessageDTO> getMessagesForGroup(@PathVariable Long groupId){
+        return conversationService.getMessagesForGroup(groupId);
+    }
 }

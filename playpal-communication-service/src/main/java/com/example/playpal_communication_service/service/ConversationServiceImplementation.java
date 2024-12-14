@@ -27,7 +27,7 @@ public class ConversationServiceImplementation implements ConversationService {
     private final SimpMessagingTemplate messagingTemplate;
 
     @Override
-    public ConversationDTO createConversation(List<Long> userIds, String groupName) {
+    public ConversationDTO createConversation(List<Long> userIds, String groupName, Long groupId) {
         log.info("Creating conversation with participants: {}", userIds);
         log.info("Conversation name: {}", groupName);
 
@@ -37,6 +37,7 @@ public class ConversationServiceImplementation implements ConversationService {
         conversation.setGroupName(groupName);
         conversation.setCreatedAt(LocalDateTime.now());
         conversation.setUpdatedAt(LocalDateTime.now());
+        conversation.setGroupId(groupId);
         return mapToConversationDTO(conversationRepository.save(conversation));
     }
 
@@ -150,5 +151,20 @@ public class ConversationServiceImplementation implements ConversationService {
         dto.setTimestamp(message.getTimestamp());
         dto.setRead(message.isRead());
         return dto;
+    }
+
+    @Override
+    public ConversationDTO findByGroupId(Long groupId) {
+        return mapToConversationDTO(conversationRepository.findByGroupId(groupId));
+    }
+
+    // Get messages for group
+    @Override
+    public List<MessageDTO> getMessagesForGroup(Long groupId) {
+        Conversation conversation = conversationRepository.findByGroupId(groupId);
+        return messageRepository.findByConversationId(conversation.getId(), PageRequest.of(0, Integer.MAX_VALUE))
+                .stream()
+                .map(this::mapToMessageDTO)
+                .collect(Collectors.toList());
     }
 }
