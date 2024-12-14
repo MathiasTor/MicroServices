@@ -14,7 +14,7 @@ public class SearchEndedEvent {
     private String description;
     private List<Long> approvedUsers;
 
-    // Constructors, Getters, and Setters
+
     public SearchEndedEvent(Long searchId, Long userId, String title, String description, List<Long> approvedUsers) {
         this.searchId = searchId;
         this.userId = userId;

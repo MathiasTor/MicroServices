@@ -11,9 +11,10 @@ import "./GroupOverviewComponent.css";
 const GroupOverviewComponent = () => {
     const { groupId } = useParams();
     const [group, setGroup] = useState(null);
-    const [usernames, setUsernames] = useState({}); // Map of userId to username
+    const [usernames, setUsernames] = useState({});
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
+    const [newUsername, setNewUsername] = useState(""); // New state for the username to be added
     const messagesEndRef = useRef(null);
     const stompClientRef = useRef(null);
     const userId = Cookies.get("userid");
@@ -67,6 +68,41 @@ const GroupOverviewComponent = () => {
             console.error("Error fetching messages:", error);
         }
     };
+
+    // Add user to the group by username
+    const addUserToGroup = async () => {
+        try {
+            // Fetch the user ID from the UserService
+            const response = await axios.get(`http://localhost:8080/user/api/users/get-id/${newUsername}`);
+            const userId = response.data;
+
+
+            await axios.post(`http://localhost:8080/group/api/group/${groupId}/addUser/${userId}`);
+
+
+            setGroup((prevGroup) => ({
+                ...prevGroup,
+                userIds: [...prevGroup.userIds, userId],
+            }));
+
+
+            setUsernames((prevUsernames) => ({
+                ...prevUsernames,
+                [userId]: newUsername, // Cache the new user's username locally
+            }));
+
+
+            setNewUsername("");
+        } catch (error) {
+            if (error.response && error.response.status === 404) {
+                alert("Username not found. Please try again.");
+            } else {
+                console.error("Error adding user to group:", error);
+                alert("An error occurred. Please try again.");
+            }
+        }
+    };
+
 
     // Connect to WebSocket for real-time chat
     const connectWebSocket = () => {
@@ -162,6 +198,17 @@ const GroupOverviewComponent = () => {
                                 <li key={id}>{usernames[id] || `User ID: ${id}`}</li>
                             ))}
                         </ul>
+                        {/* Add User Section */}
+                        <div className="add-user-section">
+                            <h4>Add People by Username</h4>
+                            <input
+                                type="text"
+                                value={newUsername}
+                                onChange={(e) => setNewUsername(e.target.value)}
+                                placeholder="Enter username"
+                            />
+                            <button onClick={addUserToGroup}>Add</button>
+                        </div>
                         <div className="chat-section">
                             <h2>Group Chat</h2>
                             <div className="chat-messages">

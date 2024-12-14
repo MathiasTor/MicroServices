@@ -53,12 +53,12 @@ public class LeaderboardService {
                 Leaderboard entry = leaderboardRepo.findByUserId(charData.getUserId())
                         .orElse(new Leaderboard());
 
-                // Calculate weekly kills
+
                 int weeklyToaKC = charData.getToaKC() - entry.getWeeklyToaKC();
                 int weeklyCoxKC = charData.getCoxKC() - entry.getWeeklyCoxKC();
                 int weeklyTobKC = charData.getTobKC() - entry.getWeeklyTobKC();
 
-                // Update leaderboard entry
+
                 entry.setUserId(charData.getUserId());
                 entry.setRunescapeName(charData.getRunescapeName());
                 entry.setWeeklyToaKC(weeklyToaKC > 0 ? weeklyToaKC : 0);

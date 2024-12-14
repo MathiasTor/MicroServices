@@ -82,3 +82,30 @@
     margin-left: 5px;
     padding: 5px 10px;
 }
+
+.add-user-section {
+    margin-top: 20px;
+    text-align: left;
+}
+
+.add-user-section input {
+    width: 70%;
+    padding: 5px;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.add-user-section button {
+    padding: 5px 10px;
+    background-color: #0073e6;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add-user-section button:hover {
+    background-color: #005bb5;
+}
+

@@ -31,12 +31,12 @@ const Leaderboard = () => {
         }
     };
 
-    // Helper function to calculate percentage
+
     const calculatePercentage = (value, maxValue) => {
         return maxValue > 0 ? (value / maxValue) * 100 : 0;
     };
 
-    // Fetch Data on Component Mount
+
     useEffect(() => {
         fetchTotalLeaderboard();
         fetchWeeklyLeaderboard();

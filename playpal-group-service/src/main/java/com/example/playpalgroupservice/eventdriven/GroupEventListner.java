@@ -21,7 +21,7 @@ public class GroupEventListner {
     public void handleSearchEndedEvent(SearchEndedEvent event) {
         log.info("Received search.ended event: {}", event);
 
-        // Map the event to a Group entity and create a group
+
         Group group = new Group();
         group.setGroupName(event.getTitle());
         group.setGroupDescription(event.getDescription());
