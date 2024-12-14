@@ -54,4 +54,8 @@ public class ProfileService {
     public Optional<PlaypalProfile> getProfileByUserId(Long userId) {
         return profileRepository.findByUserId(userId);
     }
+
+    public boolean profileExists(Long userId) {
+        return profileRepository.findByUserId(userId).isPresent();
+    }
 }
