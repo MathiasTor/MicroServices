@@ -255,7 +255,7 @@ public class RunescapeService {
     public RunescapeChar getStatsForUser(Long userid) {
         RunescapeChar runescapeChar = runescapeRepository.findByUserId(userid);
         if(runescapeChar != null) {
-            System.out.println("Found character for user: " + runescapeChar.getRunescapeName());
+            log.info("Found character for user: " + runescapeChar.getRunescapeName());
             return runescapeChar;
         } else {
             return null;
