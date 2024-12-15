@@ -14,7 +14,7 @@ Through **PlayPal**, we aspire to create an engaging and user-friendly experienc
 * Create and join events/groups tailored to in-game activities.
 * Engage in real-time chat and community interactions.
 * Participate in leaderboards and data-driven features to encourage engagement.
-* Most importantly, have fun! (And level up:+1:)
+* Most importantly, have fun! (And level up:+1:)  :thumbsup:
 
 ## **__2. How to Build, start and Run the Project__**
 
