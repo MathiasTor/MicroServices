@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+
+api:
+  url: http://localhost:8080
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: docker
+api:
+  url: http://gateway:8080

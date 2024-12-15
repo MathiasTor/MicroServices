@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
 
-
   dozzle:
     image: amir20/dozzle:latest
     container_name: dozzle
@@ -17,7 +16,6 @@ services:
       DOZZLE_FILTER: "status=running"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-
 
   # Consul Service
   consul:
@@ -54,7 +52,6 @@ services:
     labels:
       - dev.dozzle.group=Configs
 
-
   # Profile Service
   profile-service:
     container_name: profile
@@ -68,8 +65,8 @@ services:
       - rabbitmq
       - user-service
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CLOUD_CONSUL_HOST=consul
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONSUL_HOST: consul
     labels:
       - dev.dozzle.group=myapp
 
@@ -85,8 +82,8 @@ services:
       - consul
       - rabbitmq
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CLOUD_CONSUL_HOST=consul
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONSUL_HOST: consul
     labels:
       - dev.dozzle.group=myapp
 
@@ -102,8 +99,9 @@ services:
       - consul
       - rabbitmq
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CLOUD_CONSUL_HOST=consul
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONSUL_HOST: consul
+      API_URL: http://gateway:8080
     labels:
       - dev.dozzle.group=myapp
 
@@ -119,12 +117,12 @@ services:
       - consul
       - rabbitmq
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CLOUD_CONSUL_HOST=consul
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONSUL_HOST: consul
     labels:
       - dev.dozzle.group=myapp
 
-  # Leaderboard service
+  # Leaderboard Service
   leaderboard-service:
     container_name: leaderboard
     image: leaderboard-service:1.0
@@ -136,8 +134,9 @@ services:
       - consul
       - rabbitmq
     environment:
-    - SPRING_PROFILES_ACTIVE=docker
-    - SPRING_CLOUD_CONSUL_HOST=consul
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONSUL_HOST: consul
+      API_URL: http://gateway:8080
     labels:
       - dev.dozzle.group=EndlessFetch
 
@@ -153,8 +152,8 @@ services:
       - consul
       - rabbitmq
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CLOUD_CONSUL_HOST=consul
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONSUL_HOST: consul
     labels:
       - dev.dozzle.group=myapp
 
@@ -170,8 +169,8 @@ services:
       - consul
       - rabbitmq
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CLOUD_CONSUL_HOST=consul
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONSUL_HOST: consul
     labels:
       - dev.dozzle.group=myapp
 
@@ -187,8 +186,9 @@ services:
       - consul
       - rabbitmq
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CLOUD_CONSUL_HOST=consul
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONSUL_HOST: consul
+      API_URL: http://gateway:8080
     labels:
       - dev.dozzle.group=myapp
 
@@ -204,8 +204,8 @@ services:
       - consul
       - rabbitmq
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CLOUD_CONSUL_HOST=consul
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONSUL_HOST: consul
     labels:
       - dev.dozzle.group=myapp
 
@@ -221,8 +221,8 @@ services:
       - consul
       - rabbitmq
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CLOUD_CONSUL_HOST=consul
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONSUL_HOST: consul
     labels:
       - dev.dozzle.group=myapp
 
@@ -235,7 +235,6 @@ services:
     networks:
       - playpal-network
     working_dir: /app
-
 
 networks:
   playpal-network:

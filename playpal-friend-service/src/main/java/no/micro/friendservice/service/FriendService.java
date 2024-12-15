@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.micro.friendservice.model.Friends;
 import no.micro.friendservice.repo.FriendsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -155,6 +156,9 @@ public class FriendService {
         return incomingRequests;
     }
 
+    @Value("${api.url}")
+    private String apiUrl;
+
     public void acceptFriendRequest(Long userId, Long friendId) {
         Friends user = friendsRepo.findByUserId(userId);
         Friends friend = friendsRepo.findByUserId(friendId);
@@ -172,7 +176,7 @@ public class FriendService {
 
             // Send POST request to create the conversation
             try {
-                String url = "http://localhost:8080/communication/api/conversations/dm";
+                String url = apiUrl + "/communication/api/conversations/dm";
                 RestTemplate restTemplate = new RestTemplate();
 
                 // Set headers

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import './LiveSearch.css';
 
 const LiveSearch = () => {
-    const userId = cookies.get('userid'); // Assuming a cookie holds the user ID
+    const userId = cookies.get('userid');
     const navigate = useNavigate();
 
     const [liveUsers, setLiveUsers] = useState([]);
@@ -13,13 +13,13 @@ const LiveSearch = () => {
     const [loading, setLoading] = useState(false);
     const [matchMessage, setMatchMessage] = useState('');
     const [liveUserSearchId, setLiveUserSearchId] = useState(null);
-    const [groupInfo, setGroupInfo] = useState(null); // State to store group information
+    const [groupInfo, setGroupInfo] = useState(null);
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
                 // Fetch all live users
-                const usersResponse = await axios.get('http://localhost:8080/livesearch2/api/live/all');
+                const usersResponse = await axios.get('http://localhost:8080/livesearch/api/live/all');
                 const usersData = usersResponse.data;
 
                 // Filter active users
@@ -27,7 +27,7 @@ const LiveSearch = () => {
                 setLiveUsers(activeUsers);
 
                 // Fetch user status (returns true/false)
-                const statusResponse = await axios.get(`http://localhost:8080/livesearch2/api/live/status/${userId}`);
+                const statusResponse = await axios.get(`http://localhost:8080/livesearch/api/live/status/${userId}`);
                 const statusData = statusResponse.data;
 
                 // Set isLive based on the status endpoint
@@ -47,13 +47,13 @@ const LiveSearch = () => {
 
         const pollMatchStatus = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/livesearch2/api/live/match-status/${liveUserSearchId}`);
+                const response = await axios.get(`http://localhost:8080/livesearch/api/live/match-status/${liveUserSearchId}`);
                 const isMatched = response.data;
 
                 if (isMatched) {
                     setMatchMessage('Match found! You are successfully matched.');
                     clearInterval(pollInterval); // Stop polling if a match is found
-                    fetchGroupInfo(); // Fetch the latest group info
+                    fetchGroupInfo();
                 }
             } catch (error) {
                 console.error('Error polling match status:', error);
@@ -67,7 +67,7 @@ const LiveSearch = () => {
     const fetchGroupInfo = async () => {
         try {
             const response = await axios.get(`http://localhost:8080/group/api/group/latest/${userId}`);
-            setGroupInfo(response.data); // Save group info to state
+            setGroupInfo(response.data);
         } catch (error) {
             console.error('Error fetching group info:', error);
         }
@@ -82,7 +82,7 @@ const LiveSearch = () => {
     const goLive = async () => {
         setLoading(true);
         try {
-            const response = await axios.post(`http://localhost:8080/livesearch2/api/live/new/${userId}`);
+            const response = await axios.post(`http://localhost:8080/livesearch/api/live/new/${userId}`);
             if (response.status === 200 || response.status === 201) {
                 const data = response.data;
 
@@ -92,7 +92,7 @@ const LiveSearch = () => {
                 // Set a message based on initial response
                 if (data.userId !== 0 && data.matchedUserId !== 0) {
                     setMatchMessage(`Match found immediately! You are matched with User ID: ${data.matchedUserId}`);
-                    fetchGroupInfo(); // Fetch the latest group info immediately
+                    fetchGroupInfo();
                 } else {
                     setMatchMessage('You are now live and waiting for a match...');
                 }
@@ -113,11 +113,11 @@ const LiveSearch = () => {
     const stopLive = async () => {
         setLoading(true);
         try {
-            const response = await axios.put(`http://localhost:8080/livesearch2/api/live/stop/${userId}`);
+            const response = await axios.put(`http://localhost:8080/livesearch/api/live/stop/${userId}`);
             if (response.status === 200) {
                 setMatchMessage('You have stopped being live.');
                 setIsLive(false);
-                setLiveUserSearchId(null); // Clear the LiveUserSearch ID
+                setLiveUserSearchId(null);
             } else {
                 throw new Error('Failed to stop live');
             }

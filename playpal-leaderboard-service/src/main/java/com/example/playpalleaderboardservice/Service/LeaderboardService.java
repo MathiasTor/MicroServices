@@ -3,6 +3,9 @@ package com.example.playpalleaderboardservice.Service;
 import com.example.playpalleaderboardservice.DTO.RunescapeCharDTO;
 import com.example.playpalleaderboardservice.Model.Leaderboard;
 import com.example.playpalleaderboardservice.Repository.LeaderboardRepo;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -10,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Slf4j
 public class LeaderboardService {
 
     private final LeaderboardRepo leaderboardRepo;
@@ -20,10 +24,18 @@ public class LeaderboardService {
         this.restTemplate = restTemplate;
     }
 
-    private final String runescapeServiceUrl = "http://localhost:8080/runescape/api/runescape";
+    @Value("${api.url}")
+    private String apiUrl;
 
+    @PostConstruct
+    public void init() {
+        apiUrl = apiUrl + "/runescape/api/runescape";
+    }
+
+    //private final String runescapeServiceUrl = "http://gateway:8080/runescape/api/runescape";
     public void updateLeaderboardTotal() {
-        String url = runescapeServiceUrl + "/runescape-chars";
+        log.info("API URL" + apiUrl);
+        String url = apiUrl + "/runescape-chars";
         RunescapeCharDTO[] runescapeChars = restTemplate.getForObject(url, RunescapeCharDTO[].class);
 
         if (runescapeChars != null) {
@@ -45,7 +57,7 @@ public class LeaderboardService {
     }
 
     public void updateLeaderboardWeekly() {
-        String url = runescapeServiceUrl + "/runescape-chars";
+        String url = apiUrl + "/runescape-chars";
         RunescapeCharDTO[] runescapeChars = restTemplate.getForObject(url, RunescapeCharDTO[].class);
 
         if (runescapeChars != null) {

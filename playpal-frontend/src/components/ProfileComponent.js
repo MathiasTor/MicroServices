@@ -262,6 +262,22 @@ const ProfileComponent = () => {
                                 </button>
                             </div>
                         )}
+                        {/* Add RuneScape account linking logic */}
+                        {!linked && (
+                            <div className="link-runescape">
+                                <h2>Link RuneScape Account</h2>
+                                <input
+                                    type="text"
+                                    placeholder="RuneScape Username"
+                                    value={runescapeUsername}
+                                    onChange={(e) => setRunescapeUsername(e.target.value)}
+                                    className="runescape-input"
+                                />
+                                <button onClick={handleLinkRunescape} className="link-button">
+                                    Link Account
+                                </button>
+                            </div>
+                        )}
                     </>
                 ) : (
                     <div className="vote-buttons">

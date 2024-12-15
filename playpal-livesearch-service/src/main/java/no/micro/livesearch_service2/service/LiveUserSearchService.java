@@ -3,6 +3,7 @@ package no.micro.livesearch_service2.service;
 import no.micro.livesearch_service2.model.LiveUserSearch;
 import no.micro.livesearch_service2.repo.LiveUserSearchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -111,6 +112,9 @@ public class LiveUserSearchService {
         return false;
     }
 
+    @Value("${api.url}")
+    private String apiUrl;
+
     //POST to group service to create a group
     private void pushGroupToService(List<Long> userIds, String game, List<String> preferences, String groupName) {
         Map<String, Object> groupPayload = new HashMap<>();
@@ -118,7 +122,8 @@ public class LiveUserSearchService {
         groupPayload.put("groupDescription", String.join(", ", preferences));
         groupPayload.put("userIds", userIds);
 
-        String apiEndpoint = "http://localhost:8080/group/api/group/new";
+        String apiEndpoint = apiUrl + "/group/api/group/new";
+        //String apiEndpoint = "http://gateway:8080/group/api/group/new";
         RestTemplate restTemplate = new RestTemplate();
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(apiEndpoint, groupPayload, String.class);
