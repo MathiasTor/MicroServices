@@ -58,4 +58,15 @@ public class ProfileService {
     public boolean profileExists(Long userId) {
         return profileRepository.findByUserId(userId).isPresent();
     }
+
+    public void updateProfileImage(Long userId, String imagePath) {
+        PlaypalProfile profile = profileRepository.findByUserId(userId).orElse(null);
+        if (profile == null) {
+            throw new RuntimeException("Profile not found: " + userId);
+        }
+
+        profile.setProfilePictureUrl(imagePath);
+
+        profileRepository.save(profile);
+    }
 }

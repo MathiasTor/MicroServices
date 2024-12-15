@@ -17,8 +17,12 @@ const ProfileComponent = () => {
     const [runescapeUsername, setRunescapeUsername] = useState("");
     const [isEditing, setIsEditing] = useState(false);
     const [newBio, setNewBio] = useState("");
+    const [aiPictureInput, setAIPictureInput] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const { userId } = useParams();
+    const [profilePicture, setProfilePicture] = useState(null);
+    const [previewImage, setPreviewImage] = useState(null);
 
     useEffect(() => {
         const loggedInUserId = Cookies.get("userid");
@@ -29,36 +33,32 @@ const ProfileComponent = () => {
             return;
         }
 
-        // Determine if viewing own profile
         const viewingOwnProfile = loggedInUserId === userId;
         setIsOwnProfile(viewingOwnProfile);
 
-        // Fetch profile data for all profiles
         axios
             .get(`http://localhost:8080/profile/api/profiles/${userId}`)
             .then((response) => {
                 setProfileData(response.data);
-                setNewBio(response.data.bio || ""); // Set initial bio value
+                setNewBio(response.data.bio || "");
             })
             .catch((error) => {
                 console.error("Error fetching profile data:", error);
                 setError("Failed to fetch profile data.");
             });
 
-        // Fetch user-specific data only for own profile
         if (viewingOwnProfile) {
             axios
                 .get(`http://localhost:8080/user/api/users/specific/${userId}`)
                 .then((response) => {
                     setUserProfileData(response.data);
-                    setEmail(response.data.email); // Only set email if viewing own profile
+                    setEmail(response.data.email);
                 })
                 .catch((error) => {
                     console.error("Error fetching user details:", error);
                     setError("Failed to fetch user details.");
                 });
 
-            // Fetch RuneScape account link status and stats
             axios
                 .get(`http://localhost:8080/runescape/api/runescape/is-linked/${userId}`)
                 .then((response) => {
@@ -80,7 +80,6 @@ const ProfileComponent = () => {
                     setError("Failed to check RuneScape link status.");
                 });
         } else {
-            // Fetch RuneScape stats for other profiles if linked
             axios
                 .get(`http://localhost:8080/runescape/api/runescape/is-linked/${userId}`)
                 .then((response) => {
@@ -122,7 +121,6 @@ const ProfileComponent = () => {
         }
     };
 
-
     const handleBioUpdate = () => {
         axios
             .put(`http://localhost:8080/profile/api/profiles/${userId}`, { bio: newBio })
@@ -140,6 +138,52 @@ const ProfileComponent = () => {
             });
     };
 
+    const handleGenerateAIPicture = async () => {
+        setIsLoading(true);
+        try {
+            const response = await axios.post(
+                `http://localhost:8080/profile/api/profiles/generate-ai-picture/${userId}`,
+                { prompt: aiPictureInput }
+            );
+            setProfileData((prevData) => ({
+                ...prevData,
+                profilePictureUrl: response.data.image_urls[0],
+            }));
+            setIsLoading(false);
+            window.location.reload();
+        } catch (error) {
+            console.error("Failed to generate AI picture:", error);
+            setError("Failed to generate AI picture.");
+            setIsLoading(false);
+        }
+    };
+
+    const handleVote = async (voteType) => {
+        const loggedInUserId = Cookies.get("userid");
+
+        if (!loggedInUserId) {
+            setError("You need to be logged in to vote.");
+            return;
+        }
+
+        try {
+            const response = await axios.post(
+                `http://localhost:8080/profile/api/profiles/${userId}/vote`,
+                null,
+                {
+                    params: {
+                        voterId: loggedInUserId,
+                        voteType: voteType,
+                    },
+                }
+            );
+            setProfileData(response.data);
+        } catch (error) {
+            console.error("Failed to cast vote:", error);
+            setError("Failed to cast vote.");
+        }
+    };
+
     const handleEditToggle = () => {
         setIsEditing((prev) => !prev);
     };
@@ -152,8 +196,7 @@ const ProfileComponent = () => {
                     <div className="profile-info">
                         <h1>{isOwnProfile ? "Your Profile" : `${profileData?.name || "User"}'s Profile`}</h1>
                         {profileData && (
-                            <div className="profile-details"
-                                 style={{wordWrap: "break-word", overflowWrap: "break-word", maxWidth: "475px"}}>
+                            <div className="profile-details">
                                 <p>
                                     <strong>Username:</strong> {profileData.name}
                                 </p>
@@ -165,34 +208,14 @@ const ProfileComponent = () => {
                                     )}
                                     <strong>Bio:</strong>{" "}
                                     {isEditing ? (
-                                        <div style={{position: "relative", width: "100%", marginTop: "10px"}}>
-        <textarea
-            rows="6"
-            value={newBio}
-            onChange={(e) => setNewBio(e.target.value)}
-            style={{
-                width: "100%",
-                resize: "none",
-                padding: "10px",
-                borderRadius: "5px",
-                border: "1px solid #ccc",
-                boxSizing: "border-box",
-            }}
-        />
-                                            <button
-                                                onClick={handleBioUpdate}
-                                                style={{
-                                                    position: "absolute",
-                                                    bottom: "10px",
-                                                    right: "10px",
-                                                    padding: "8px 16px",
-                                                    backgroundColor: "#007bff",
-                                                    color: "white",
-                                                    border: "none",
-                                                    borderRadius: "5px",
-                                                    cursor: "pointer",
-                                                }}
-                                            >
+                                        <div className="bio-edit-container">
+                                            <textarea
+                                                rows="6"
+                                                value={newBio}
+                                                onChange={(e) => setNewBio(e.target.value)}
+                                                className="bio-textarea"
+                                            />
+                                            <button onClick={handleBioUpdate} className="save-button">
                                                 Save
                                             </button>
                                         </div>
@@ -210,76 +233,52 @@ const ProfileComponent = () => {
                         )}
                     </div>
                     <div className="profile-picture">
-                    <img
-                            src={profileData?.profilePictureUrl || "/default-profile.png"}
-                            alt="Profile"
-                            style={{
-                                position: "absolute",
-                                marginTop: "-14%",
-                                marginLeft: "30%",
-                                width: "250px",
-                                height: isOwnProfile ? "250px" : "200px",
-                                backgroundColor: "#f0f0f0",
-                                border: "2px solid #ddd",
-                                borderRadius: "10px",
-                                textAlign: "center",
-                                objectFit: "cover",
-                                boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-                            }}
-                        />
-                        {isOwnProfile && (
-                            <button
-                                style={{
-                                    position: "relative",
-                                    bottom: "10px",
-                                    padding: "5px 10px",
-                                    backgroundColor: "#007bff",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "5px",
-                                    cursor: "pointer",
-                                    fontSize: "14px"
-                                }}
-                            >
-                                Change Picture
-                            </button>
+                        {isLoading ? (
+                            <div className="loading-indicator">Loading...</div>
+                        ) : (
+                            <img src={profileData?.profilePictureUrl || "/default-profile.png"} alt="Profile" />
+                        )}
+                        {isOwnProfile && previewImage && (
+                            <img src={previewImage} alt="Preview" className="preview-image" />
                         )}
                     </div>
                 </div>
-                {isOwnProfile && (
-                    <button
-                        onClick={handleEditToggle}
-                        style={{
-                            position: "relative",
-                            marginTop: "20px",
-                            padding: "10px 20px",
-                            backgroundColor: "#007bff",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "5px",
-                            cursor: "pointer",
-                            alignSelf: "end",
-                        }}
-                    >
-                        {isEditing ? "Cancel" : "Edit Profile"}
-                    </button>
-                )}
-                {isOwnProfile && !linked && (
-                    <div className="link-runescape" style={{ marginTop: "20px" }}>
-                        <h2>Link RuneScape Account</h2>
-                        <input
-                            type="text"
-                            placeholder="RuneScape Username"
-                            value={runescapeUsername}
-                            onChange={(e) => setRunescapeUsername(e.target.value)}
-                            style={{ padding: "5px", width: "300px" }}
-                        />
-                        <button onClick={handleLinkRunescape} style={{ marginLeft: "10px" }}>
-                            Link Account
+                {isOwnProfile ? (
+                    <>
+                        <button onClick={handleEditToggle} className="edit-button">
+                            {isEditing ? "Cancel" : "Edit Profile"}
+                        </button>
+                        {isEditing && (
+                            <div className="ai-picture-generator">
+                                <input
+                                    type="text"
+                                    placeholder="Prompt"
+                                    value={aiPictureInput}
+                                    onChange={(e) => setAIPictureInput(e.target.value)}
+                                    className="ai-input"
+                                />
+                                <button onClick={handleGenerateAIPicture} className="generate-button">
+                                    Generate AI Picture
+                                </button>
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <div className="vote-buttons">
+                        <button
+                            onClick={() => handleVote("UPVOTE")}
+                            className="upvote-button"
+                        >
+                            👍
+                        </button>
+                        <button
+                            onClick={() => handleVote("DOWNVOTE")}
+                            className="downvote-button"
+                        >
+                            👎
                         </button>
                     </div>
                 )}
-
                 {runescapeStats && (
                     <div className="stats-container">
                         <div className="runescape-stats">
@@ -325,7 +324,7 @@ const ProfileComponent = () => {
                     </div>
                 )}
             </div>
-            <BottomBar/>
+            <BottomBar />
         </div>
     );
 };
