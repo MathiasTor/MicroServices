@@ -32,9 +32,8 @@ public class LeaderboardService {
         apiUrl = apiUrl + "/runescape/api/runescape";
     }
 
-    //private final String runescapeServiceUrl = "http://gateway:8080/runescape/api/runescape";
+
     public void updateLeaderboardTotal() {
-        log.info("API URL" + apiUrl);
         String url = apiUrl + "/runescape-chars";
         RunescapeCharDTO[] runescapeChars = restTemplate.getForObject(url, RunescapeCharDTO[].class);
 
@@ -45,9 +44,6 @@ public class LeaderboardService {
 
                 entry.setUserId(charData.getUserId());
                 entry.setRunescapeName(charData.getRunescapeName());
-                entry.setWeeklyToaKC(charData.getToaKC());
-                entry.setWeeklyCoxKC(charData.getCoxKC());
-                entry.setWeeklyTobKC(charData.getTobKC());
                 entry.setTotalRaids(charData.getToaKC() + charData.getCoxKC() + charData.getTobKC());
                 entry.setLastUpdated(LocalDateTime.now());
 
@@ -55,6 +51,7 @@ public class LeaderboardService {
             }
         }
     }
+
 
     public void updateLeaderboardWeekly() {
         String url = apiUrl + "/runescape-chars";
@@ -66,17 +63,25 @@ public class LeaderboardService {
                         .orElse(new Leaderboard());
 
 
-                int weeklyToaKC = charData.getToaKC() - entry.getWeeklyToaKC();
-                int weeklyCoxKC = charData.getCoxKC() - entry.getWeeklyCoxKC();
-                int weeklyTobKC = charData.getTobKC() - entry.getWeeklyTobKC();
+                if (entry.getBaselineToaKC() == 0 && entry.getBaselineCoxKC() == 0 && entry.getBaselineTobKC() == 0) {
+                    entry.setBaselineToaKC(charData.getToaKC());
+                    entry.setBaselineCoxKC(charData.getCoxKC());
+                    entry.setBaselineTobKC(charData.getTobKC());
+                }
 
 
-                entry.setUserId(charData.getUserId());
-                entry.setRunescapeName(charData.getRunescapeName());
-                entry.setWeeklyToaKC(weeklyToaKC > 0 ? weeklyToaKC : 0);
-                entry.setWeeklyCoxKC(weeklyCoxKC > 0 ? weeklyCoxKC : 0);
-                entry.setWeeklyTobKC(weeklyTobKC > 0 ? weeklyTobKC : 0);
+                int weeklyToaProgress = charData.getToaKC() - entry.getBaselineToaKC();
+                int weeklyCoxProgress = charData.getCoxKC() - entry.getBaselineCoxKC();
+                int weeklyTobProgress = charData.getTobKC() - entry.getBaselineTobKC();
+
+
+                entry.setWeeklyToaKC(Math.max(weeklyToaProgress, 0));
+                entry.setWeeklyCoxKC(Math.max(weeklyCoxProgress, 0));
+                entry.setWeeklyTobKC(Math.max(weeklyTobProgress, 0));
+
+
                 entry.setTotalRaids(charData.getToaKC() + charData.getCoxKC() + charData.getTobKC());
+                entry.setRunescapeName(charData.getRunescapeName());
                 entry.setLastUpdated(LocalDateTime.now());
 
                 leaderboardRepo.save(entry);
@@ -84,12 +89,53 @@ public class LeaderboardService {
         }
     }
 
+
+
+
+
+
+
+    public void resetWeeklyStats() {
+        String url = apiUrl + "/runescape-chars";
+        RunescapeCharDTO[] runescapeChars = restTemplate.getForObject(url, RunescapeCharDTO[].class);
+
+        if (runescapeChars != null) {
+            for (RunescapeCharDTO charData : runescapeChars) {
+                Leaderboard entry = leaderboardRepo.findByUserId(charData.getUserId())
+                        .orElse(new Leaderboard());
+
+
+                entry.setBaselineToaKC(charData.getToaKC());
+                entry.setBaselineCoxKC(charData.getCoxKC());
+                entry.setBaselineTobKC(charData.getTobKC());
+
+
+                entry.setWeeklyToaKC(0);
+                entry.setWeeklyCoxKC(0);
+                entry.setWeeklyTobKC(0);
+
+                leaderboardRepo.save(entry);
+            }
+        }
+    }
+
+
+
+
     public List<Leaderboard> getTotalLeaderboard() {
         return leaderboardRepo.findAllByOrderByTotalRaidsDesc();
     }
 
     public List<Leaderboard> getWeeklyLeaderboard() {
-        return leaderboardRepo.findAllByOrderByWeeklyToaKCDesc();
+        List<Leaderboard> leaderboardList = leaderboardRepo.findAll();
+
+        return leaderboardList.stream()
+                .sorted((a, b) -> {
+                    int totalWeeklyRaidsA = a.getWeeklyToaKC() + a.getWeeklyCoxKC() + a.getWeeklyTobKC();
+                    int totalWeeklyRaidsB = b.getWeeklyToaKC() + b.getWeeklyCoxKC() + b.getWeeklyTobKC();
+                    return Integer.compare(totalWeeklyRaidsB, totalWeeklyRaidsA);
+                })
+                .toList();
     }
 
 }

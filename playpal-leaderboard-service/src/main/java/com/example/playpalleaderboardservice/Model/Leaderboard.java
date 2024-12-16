@@ -24,6 +24,9 @@ public class Leaderboard {
     private int weeklyCoxKC;
     private int weeklyTobKC;
 
+    private int baselineToaKC;
+    private int baselineCoxKC;
+    private int baselineTobKC;
 
     private int totalRaids;
 

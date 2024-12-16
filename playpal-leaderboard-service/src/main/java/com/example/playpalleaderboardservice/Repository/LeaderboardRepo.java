@@ -10,7 +10,6 @@ public interface LeaderboardRepo extends JpaRepository<Leaderboard, Long> {
 
     List<Leaderboard> findAllByOrderByTotalRaidsDesc();
 
-    List<Leaderboard> findAllByOrderByWeeklyToaKCDesc();
 
     Optional<Leaderboard> findByUserId(Long userId);
 

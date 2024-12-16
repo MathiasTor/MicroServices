@@ -13,14 +13,16 @@ public class LeaderboardSyncTask {
         this.leaderboardService = leaderboardService;
     }
 
-    @Scheduled(fixedRate = 3000) //every 30 sec
-    public void syncLeaderboardTotalWeekly() {
+    // Update total stats every 30 seconds
+    @Scheduled(fixedRate = 30000)
+    public void updateTotalStats() {
         leaderboardService.updateLeaderboardTotal();
-    }
-
-    @Scheduled(cron = "0 0 0 * * MON") // Every Monday at midnight
-    public void syncLeaderboardWeekly() {
         leaderboardService.updateLeaderboardWeekly();
     }
 
+
+    @Scheduled(cron = "0 0 0 * * MON")
+    public void resetWeeklyStats() {
+        leaderboardService.resetWeeklyStats();
+    }
 }
