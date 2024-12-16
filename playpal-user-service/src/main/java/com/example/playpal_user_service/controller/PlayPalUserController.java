@@ -23,12 +23,6 @@ public class PlayPalUserController {
         this.playPalUserService = playPalUserService;
     }
 
-    @GetMapping("/validate/{userId}")
-    public ResponseEntity<Boolean> validateUser(@PathVariable Long userId) {
-        log.info("Validating user with ID: {}", userId);
-        return ResponseEntity.ok(userId % 2 == 0); // Mock: Even IDs are valid
-    }
-
     @GetMapping("/{userId}")
     public String getUserName(@PathVariable Long userId) {
         return playPalUserService.getUserName(userId);
