@@ -31,6 +31,13 @@ public class ConversationController {
         return conversationService.createDMConversation(userIds);
     }
 
+    //Different way of creating a dm conversation
+    @GetMapping("/create/{userId1}/{userId2}")
+    public ConversationDTO createDMConversationWithIds(@PathVariable Long userId1, @PathVariable Long userId2) {
+        log.info("Creating dm conversation with participants: {} and {}", userId1, userId2);
+        return conversationService.createDMConversationWithIds(userId1, userId2);
+    }
+
     //Get dms for user
     @GetMapping("/dm/{userId}")
     public List<ConversationDTO> getDMsForUser(@PathVariable Long userId) {

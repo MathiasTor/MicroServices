@@ -43,7 +43,17 @@ public class ConversationServiceImplementation implements ConversationService {
 
     @Override
     public ConversationDTO createDMConversation(List<Long> userIds) {
-        log.info("Creating conversation with participants: {}", userIds);
+        Conversation convo = conversationRepository.findByGroupName("Direct Message: " + userIds.get(0) + " and " + userIds.get(1));
+        Conversation convo2 = conversationRepository.findByGroupName("Direct Message: " + userIds.get(1) + " and " + userIds.get(0));
+
+        log.info("Convo1: {}", convo);
+        log.info("Convo2: {}", convo2);
+
+        if (convo != null || convo2 != null) {
+            return null;
+        }
+
+        log.info("Creating DM conversation with participants: {}", userIds);
 
         Conversation conversation = new Conversation();
         conversation.setUserIds(userIds);
@@ -166,5 +176,29 @@ public class ConversationServiceImplementation implements ConversationService {
                 .stream()
                 .map(this::mapToMessageDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ConversationDTO createDMConversationWithIds(Long userId1, Long userId2) {
+
+        Conversation convo = conversationRepository.findByGroupName("Direct Message: " + userId1 + " and " + userId2);
+        Conversation convo2 = conversationRepository.findByGroupName("Direct Message: " + userId2 + " and " + userId1);
+
+        log.info("Convo1: {}", convo);
+        log.info("Convo2: {}", convo2);
+
+        if (convo != null || convo2 != null) {
+            return null;
+        }
+
+        List<Long> userIds = List.of(userId1, userId2);
+        log.info("Creating DM-conversation with participants: {}", userIds);
+
+        Conversation conversation = new Conversation();
+        conversation.setUserIds(userIds);
+        conversation.setGroupName("Direct Message: " + userIds.get(0) + " and " + userIds.get(1));
+        conversation.setCreatedAt(LocalDateTime.now());
+        conversation.setUpdatedAt(LocalDateTime.now());
+        return mapToConversationDTO(conversationRepository.save(conversation));
     }
 }

@@ -80,10 +80,18 @@ const FriendsListComponent = () => {
             const response = await axios.get(`${userAPI}/search?username=${newFriendUsername}`);
             const friendId = response.data.id;
 
+            console.log("Friend ID", friendId);
+            console.log("User ID", userId);
+
+            if(friendId === userId) {
+                setError("You cannot add yourself as a friend.");
+                return;
+            }
+
             await axios.post(`${friendsAPI}/send-request/${userId}/${friendId}`);
             setSuccess(`Friend request sent to ${newFriendUsername}`);
             setNewFriendUsername("");
-            setShowAddFriend(false); // Hide the Add Friend section after adding
+            setShowAddFriend(false);
         } catch (error) {
             setError("Failed to send friend request. Make sure the username exists.");
         }
@@ -96,8 +104,8 @@ const FriendsListComponent = () => {
 
             await axios.post(`${friendsAPI}/accept-friend-request/${userId}/${friendId}`);
             setSuccess(`${requestUsername} has been added to your friends list.`);
-            fetchPendingRequests(); // Refresh pending requests list
-            fetchFriends(); // Refresh friends list
+            fetchPendingRequests();
+            fetchFriends();
         } catch (error) {
             setError("Failed to accept friend request.");
         }
@@ -111,7 +119,7 @@ const FriendsListComponent = () => {
 
                 await axios.post(`${friendsAPI}/remove-friend/${userId}/${friendId}`);
                 setSuccess(`${friendUsername} has been removed from your friends list.`);
-                fetchFriends(); // Refresh friends list
+                fetchFriends();
             } catch (error) {
                 setError("Failed to remove friend.");
             }
@@ -120,6 +128,32 @@ const FriendsListComponent = () => {
 
     function chatFriend(friend) {
         console.log("Chatting with", friend);
+    }
+
+    const blockFriend = async (friendUsername) => {
+        if (window.confirm(`Are you sure you want to block ${friendUsername}?`)) {
+            try {
+                const friendIdToBlockResponse = await axios.get(`${userAPI}/search?username=${friendUsername}`);
+                const friendId = friendIdToBlockResponse.data.id;
+
+                const response = await axios.post(`${friendsAPI}/block-friend/${userId}/${friendId}`);
+            } catch (error) {
+                setError("Failed to block user.");
+            }
+        }
+    }
+
+    const unBlockFriend = async (friendUsername) => {
+        if (window.confirm(`Are you sure you want to unblock ${friendUsername}?`)) {
+            try {
+                const friendIdToUnblockResponse = await axios.get(`${userAPI}/search?username=${friendUsername}`);
+                const friendId = friendIdToUnblockResponse.data.id;
+
+                const response = await axios.post(`${friendsAPI}/unblock-friend/${userId}/${friendId}`);
+            } catch (error) {
+                setError("Failed to unblock user.");
+            }
+        }
     }
 
     const renderTabContent = () => {
@@ -139,6 +173,12 @@ const FriendsListComponent = () => {
                                                 className="remove-friend-button"
                                             >
                                                 Delete
+                                            </button>
+                                            <button
+                                                onClick={() => blockFriend(friend)}
+                                                className="remove-friend-button"
+                                            >
+                                                Block
                                             </button>
                                         </div>
                                     </li>
@@ -179,7 +219,14 @@ const FriendsListComponent = () => {
                         {blockedUsers.length > 0 ? (
                             <ul>
                                 {blockedUsers.map((blocked, index) => (
-                                    <li key={index}>{blocked}</li>
+                                    <li key={index}>{blocked}
+                                        <button
+                                            onClick={() => unBlockFriend(blocked)}
+                                            className="remove-friend-button"
+                                        >
+                                            Unblock
+                                        </button>
+                                    </li>
                                 ))}
                             </ul>
                         ) : (

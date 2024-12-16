@@ -12,6 +12,7 @@ const BottomBar = () => {
     const [usernames, setUsernames] = useState({});
     const [loading, setLoading] = useState(false);
     const [incomingRequests, setIncomingRequests] = useState(0);
+    const [newMessages, setNewMessages] = useState([]);
     const userId = cookies.get("userid");
     const navigate = useNavigate();
 
@@ -61,23 +62,40 @@ const BottomBar = () => {
 
     const toggleFriendsVisibility = () => {
         setIsFriendsVisible((prev) => {
-            if (!prev) setIsChatVisible(false); // Close chat if friends section is opened
+            if (!prev) setIsChatVisible(false);
             return !prev;
         });
     };
 
     const toggleChatVisibility = async () => {
         setIsChatVisible((prev) => {
-            if (!prev) setIsFriendsVisible(false); // Close friends if chat section is opened
+            if (!prev) setIsFriendsVisible(false);
             return !prev;
         });
+
         if (!isChatVisible) {
             setLoading(true);
             try {
+                // Fetch the list of DMs
                 const response = await axios.get(dmAPI);
-                setDmList(response.data);
+                const allDms = response.data;
 
-                const allRecipientIds = response.data.flatMap((dm) =>
+                // Fetch blocked users and normalize IDs
+                const blockedResponse = await axios.get(`${friendsAPI}/get-blocked/${userId}`);
+                const blockedUsers = new Set(blockedResponse.data.map(String));
+
+                console.log("Blocked Users: ", blockedUsers);
+
+                // Filter out DMs with blocked users
+                const filteredDms = allDms.filter((dm) =>
+                    dm.userIds.every((id) => String(id) === String(userId) || !blockedUsers.has(String(id)))
+                );
+
+                console.log("Filtered DMs: ", filteredDms);
+                setDmList(filteredDms);
+
+                // Fetch usernames for remaining recipient IDs
+                const allRecipientIds = filteredDms.flatMap((dm) =>
                     dm.userIds.filter((id) => String(id) !== String(userId))
                 );
                 await fetchUsernames(allRecipientIds);
@@ -100,6 +118,54 @@ const BottomBar = () => {
         }
     };
 
+    const newMessage = () => {
+        setNewMessages((prev) => [...prev, ""]);
+    };
+
+    const handleUsernameSubmit = async (username, index) => {
+        if (username === "") {
+            console.error("Username is empty");
+            return;
+        }
+
+        try {
+            const userResponse = await axios.get(`http://localhost:8080/user/api/users/get-id/${username}`);
+            const userIdToadd = userResponse.data;
+
+            console.log("User ID: ", userIdToadd);
+
+            if (!userIdToadd) {
+                console.error("User not found");
+                return;
+            }
+
+            const self = parseInt(userId);;
+
+            createConversation(self, userIdToadd);
+
+        } catch (error) {
+            console.error("Failed to fetch user ID", error);
+        }
+    };
+
+    const createConversation = async (user1, user2) => {
+        try {
+            const communicationResponse = await axios.get(`http://localhost:8080/communication/api/conversations/create/${user1}/${user2}`);
+            console.log("Conversation Created:", communicationResponse.data);
+            toggleChatVisibility();
+        } catch (error) {
+            console.error("Failed to create conversation", error);
+        }
+    };
+
+    const handleInputChange = (value, index) => {
+        setNewMessages((prev) => {
+            const updated = [...prev];
+            updated[index] = value;
+            return updated;
+        });
+    };
+
     return (
         <div className="bottom-bar">
             <button className="chat-toggle-button" onClick={toggleChatVisibility}>
@@ -111,14 +177,29 @@ const BottomBar = () => {
 
             {isChatVisible && (
                 <div className="chat-list-container">
+                    <button onClick={newMessage}>+</button>
                     <h3>Your DMs</h3>
+                    {newMessages.map((message, index) => (
+                        <div key={index} className="new-message-container">
+                            <input
+                                type="text"
+                                placeholder="Username"
+                                value={newMessages[index]}
+                                onChange={(e) => handleInputChange(e.target.value, index)}
+                                className="new-message-input"
+                            />
+                            <button onClick={() => handleUsernameSubmit(newMessages[index], index)}>
+                                Submit
+                            </button>
+                        </div>
+                    ))}
                     {loading ? (
                         <p>Loading...</p>
                     ) : (
                         <ul>
                             {dmList.map((dm) =>
                                 dm.userIds
-                                    .filter((id) => String(id) !== String(userId)) // Show only recipients
+                                    .filter((id) => String(id) !== String(userId))
                                     .map((recipientId) => (
                                         <li key={recipientId}>
                                             <button

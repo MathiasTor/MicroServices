@@ -10,7 +10,6 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    margin-bottom: 10%;
 }
 
 button {
@@ -222,3 +221,6 @@ textarea {
     margin-left: 45%;
 }
 
+.group-content {
+    margin-bottom: 10%;
+}

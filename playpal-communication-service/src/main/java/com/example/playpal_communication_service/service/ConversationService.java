@@ -22,4 +22,6 @@ public interface ConversationService {
     ConversationDTO findByGroupId(Long groupId);
 
     List<MessageDTO> getMessagesForGroup(Long groupId);
+
+    ConversationDTO createDMConversationWithIds(Long userId1, Long userId2);
 }

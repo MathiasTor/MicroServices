@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -25,6 +26,11 @@ public class FriendService {
     public Friends sendFriendRequest(Long senderId, Long recipientId) {
         Friends friendToAdd = friendsRepo.findByUserId(recipientId);
         Friends sender = friendsRepo.findByUserId(senderId);
+
+        if(senderId.equals(recipientId)){
+            log.info("User " + senderId + " tried to send a friend request to themselves");
+            return null;
+        }
 
         if(friendToAdd == null){
             friendToAdd = new Friends();
@@ -44,6 +50,12 @@ public class FriendService {
             sender.setBlockedIds(new ArrayList<>());
 
             friendsRepo.save(sender);
+        }
+
+        //If blocked
+        if(friendToAdd.getBlockedIds().contains(senderId)){
+            log.info("User " + recipientId + " has blocked user " + senderId);
+            return null;
         }
 
         sender.getPendingIds().add(recipientId);
@@ -68,6 +80,7 @@ public class FriendService {
 
         if (!friends.getFriendIds().contains(friendId)) {
             friends.getFriendIds().add(friendId);
+            removeFriend(userId, friendId);
         }
 
         return friendsRepo.save(friends);
@@ -96,24 +109,31 @@ public class FriendService {
 
     // Block friend
     public Friends blockFriend(Long userId, Long friendId) {
-        Friends friends = friendsRepo.findByUserId(userId);
-        if (friends == null) {
-            friends = new Friends();
-            friends.setUserId(userId);
-            friends.setPendingIds(new ArrayList<>());
-            friends.setFriendIds(new ArrayList<>());
-            friends.setBlockedIds(new ArrayList<>());
+
+        Friends user = friendsRepo.findByUserId(userId);
+        Friends friend = friendsRepo.findByUserId(friendId);
+
+        friend.getFriendIds().remove(userId);
+
+        if (user == null) {
+            user = new Friends();
+            user.setUserId(userId);
+            user.setPendingIds(new ArrayList<>());
+            user.setFriendIds(new ArrayList<>());
+            user.setBlockedIds(new ArrayList<>());
         }
 
-        if (friends.getBlockedIds() == null) {
-            friends.setBlockedIds(new ArrayList<>());
+        if (user.getBlockedIds() == null) {
+            user.setBlockedIds(new ArrayList<>());
         }
 
-        if (!friends.getBlockedIds().contains(friendId)) {
-            friends.getBlockedIds().add(friendId);
+        if (!user.getBlockedIds().contains(friendId)) {
+            user.getBlockedIds().add(friendId);
+            user.getFriendIds().remove(friendId);
         }
 
-        return friendsRepo.save(friends);
+        friendsRepo.save(friend);
+        return friendsRepo.save(user);
     }
 
     // Unblock friend
@@ -128,11 +148,23 @@ public class FriendService {
 
     // Get friends for user
     public List<Long> getFriendsForUser(Long userId) {
-        Friends friends = friendsRepo.findByUserId(userId);
-        return friends != null ? friends.getFriendIds() : new ArrayList<>();
+        Friends user = friendsRepo.findByUserId(userId);
+        List<Long> friends = user != null ? new ArrayList<>(user.getFriendIds()) : new ArrayList<>();
+
+        Iterator<Long> iterator = friends.iterator();
+        while (iterator.hasNext()) {
+            Long friendId = iterator.next();
+            Friends friend = friendsRepo.findByUserId(friendId);
+            if (friend != null && friend.getBlockedIds().contains(userId)) {
+                iterator.remove();
+            }
+        }
+
+        return friends;
     }
 
-    // Get pending friend requests
+
+        // Get pending friend requests
     public List<Long> getPendingRequests(Long userId) {
         Friends friends = friendsRepo.findByUserId(userId);
         return friends != null ? friends.getPendingIds() : new ArrayList<>();
@@ -170,34 +202,37 @@ public class FriendService {
             friend.getPendingIds().remove(userId);
 
             // Create a conversation between the two users
+            createConversation(userId, friendId);
+
+            friendsRepo.save(friend);
+            friendsRepo.save(user);
+        }
+    }
+
+    private void createConversation(Long userId, Long friendId) {
+        try {
             List<Long> userIds = new ArrayList<>();
             userIds.add(userId);
             userIds.add(friendId);
 
-            // Send POST request to create the conversation
-            try {
-                String url = apiUrl + "/communication/api/conversations/dm";
-                RestTemplate restTemplate = new RestTemplate();
+            String url = apiUrl + "/communication/api/conversations/dm";
+            RestTemplate restTemplate = new RestTemplate();
 
-                // Set headers
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
+            // Set headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-                HttpEntity<List<Long>> request = new HttpEntity<>(userIds, headers);
+            HttpEntity<List<Long>> request = new HttpEntity<>(userIds, headers);
 
-                ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
 
-                if (response.getStatusCode().is2xxSuccessful()) {
-                    log.info("Successfully created conversation between users " + userId + " and " + friendId);
-                } else {
-                    log.error("Failed to create conversation between users " + userId + " and " + friendId);
-                }
-            } catch (Exception e) {
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info("Successfully created conversation between users " + userId + " and " + friendId);
+            } else {
                 log.error("Failed to create conversation between users " + userId + " and " + friendId);
             }
-
-            friendsRepo.save(friend);
-            friendsRepo.save(user);
+        } catch (Exception e) {
+            log.error("Failed to create conversation between users " + userId + " and " + friendId);
         }
     }
 }
