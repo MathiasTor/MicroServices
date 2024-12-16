@@ -1,21 +1,29 @@
 package no.micro.livesearch_service2.service;
 
+import no.micro.livesearch_service2.client.RunescapeClient;
 import no.micro.livesearch_service2.model.LiveUserSearch;
 import no.micro.livesearch_service2.repo.LiveUserSearchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 @Service
 public class LiveUserSearchService {
+
     @Autowired
     private LiveUserSearchRepository liveUserSearchRepository;
+
+    @Autowired
+    private RunescapeClient runescapeClient;
+
+    @Value("${api.url}")
+    private String groupApiBaseUrl;
 
     public List<LiveUserSearch> getLiveUserSearches() {
         return liveUserSearchRepository.findAll();
@@ -24,43 +32,101 @@ public class LiveUserSearchService {
     public LiveUserSearch goLive(Long userId) {
         deactivatePreviousEntries(userId);
 
-        // Attempt to find a match
-        LiveUserSearch matchedEntry = findMatch(userId);
-        if (matchedEntry != null) {
-            return matchedEntry;
-        } else {
-            return newLiveUserSearch(userId);
+        int combinedKC = runescapeClient.getCombinedKC(userId);
+        String username = runescapeClient.getRunescapeName(userId);
+
+        LiveUserSearch liveUserSearch = new LiveUserSearch();
+        liveUserSearch.setUserId(userId);
+        liveUserSearch.setCombinedKC(combinedKC);
+        liveUserSearch.setScaledDownKC(combinedKC); // scaledDownKC to combinedKC
+        liveUserSearch.setActive(1);
+        liveUserSearch.setReadMessage(0);
+        liveUserSearch.setInGameName(username);
+
+        return liveUserSearchRepository.save(liveUserSearch);
+    }
+
+    private void deactivatePreviousEntries(Long userId) {
+        List<LiveUserSearch> userEntries = liveUserSearchRepository.findByUserIdAndActive(userId, 1);
+        for (LiveUserSearch entry : userEntries) {
+            entry.setActive(0); // Deactivate the previous entry
+            liveUserSearchRepository.save(entry);
         }
     }
 
-    private LiveUserSearch newLiveUserSearch(Long userId) {
+    private LiveUserSearch newLiveUserSearch(Long userId, int combinedKC) {
         LiveUserSearch liveUserSearch = new LiveUserSearch();
         liveUserSearch.setUserId(userId);
+        liveUserSearch.setCombinedKC(combinedKC); // Set combined KC
         liveUserSearch.setActive(1);
         return liveUserSearchRepository.save(liveUserSearch);
     }
 
-    public LiveUserSearch findMatch(Long userId) {
-        List<LiveUserSearch> liveUserSearches = liveUserSearchRepository.findAll();
+    @Scheduled(fixedRate = 5000)
+    public synchronized void runMatchmaking() {
+        List<LiveUserSearch> activeUsers = liveUserSearchRepository.findByActive(1);
 
-        for (LiveUserSearch liveUserSearch : liveUserSearches) {
-            if (!liveUserSearch.getUserId().equals(userId) && liveUserSearch.getActive() == 1) {
-                liveUserSearch.setActive(0);
-                liveUserSearch.setMatchedUserId(userId);
+        // Iterate through the list of active users
+        for (int i = 0; i < activeUsers.size(); i++) {
+            LiveUserSearch user = activeUsers.get(i);
+            int scaledDownKC = user.getScaledDownKC();
+            int combinedKC = user.getCombinedKC();
 
-                String groupName = generateGroupName(userId, liveUserSearch.getUserId());
+            // Decrease scaledDownKC by 10% until it reaches 50%
+            int newScaledKC = scaledDownKC - (combinedKC * 10 / 100);
+            user.setScaledDownKC(Math.max(newScaledKC, combinedKC / 2)); // Minimum is 50% of combinedKC
+            liveUserSearchRepository.save(user);
 
-                //Create a group for the matched users
-                pushGroupToService(List.of(userId, liveUserSearch.getUserId()), "Runescape", List.of(""), groupName);
+            // Attempt to find a match for this user
+            findMatch(user, activeUsers, i);
+        }
+    }
 
-                return liveUserSearchRepository.save(liveUserSearch);
+
+
+    public LiveUserSearch findMatch(LiveUserSearch user, List<LiveUserSearch> activeUsers, int currentIndex) {
+        for (int j = currentIndex + 1; j < activeUsers.size(); j++) {
+            LiveUserSearch otherUser = activeUsers.get(j);
+
+            // Skip users thatvalready matched
+            if (!otherUser.getUserId().equals(user.getUserId())
+                    && otherUser.getMatchedUserId() == 0
+                    && isWithinThreshold(user.getScaledDownKC(), user.getCombinedKC(), otherUser.getScaledDownKC())) {
+
+                // Update both users
+                otherUser.setActive(0);
+                otherUser.setMatchedUserId(user.getUserId());
+                otherUser.setReadMessage(0);
+
+                user.setActive(0);
+                user.setMatchedUserId(otherUser.getUserId());
+                user.setReadMessage(0);
+
+                // Save both users at the same time
+                liveUserSearchRepository.saveAll(List.of(user, otherUser));
+
+                // Group creation
+                String groupName = generateGroupName(user.getUserId(), otherUser.getUserId());
+                pushGroupToService(List.of(user.getUserId(), otherUser.getUserId()), "Runescape", List.of(), groupName);
+
+                // Remove both matched users from the list to prevent future checks
+                activeUsers.remove(j); // Remove the matched user
+                activeUsers.remove(currentIndex);
+
+                return user;
             }
         }
-
         return null;
     }
 
-    private String generateGroupName(Long userId, Long matchId){
+    private boolean isWithinThreshold(int scaledDownKC, int combinedKC, int otherKC) {
+        int lowerBound = Math.min(scaledDownKC, combinedKC);
+        int upperBound = Math.max(scaledDownKC, combinedKC);
+        return otherKC >= lowerBound && otherKC <= upperBound;
+    }
+
+
+    private String generateGroupName(Long userId, Long matchId) {
         if (userId < matchId) {
             return userId + "-" + matchId + "-Matched Group";
         } else {
@@ -68,61 +134,31 @@ public class LiveUserSearchService {
         }
     }
 
-    private void deactivatePreviousEntries(Long userId) {
-        List<LiveUserSearch> userEntries = liveUserSearchRepository.findAll();
-        for (LiveUserSearch entry : userEntries) {
-            if (entry.getUserId().equals(userId) && entry.getActive() == 1) {
-                entry.setActive(0);
-                liveUserSearchRepository.save(entry);
-            }
-        }
-    }
 
-    public LiveUserSearch stopLive(Long userId) {
-        List<LiveUserSearch> userEntries = liveUserSearchRepository.findAll();
-        for (LiveUserSearch entry : userEntries) {
-            if (entry.getUserId().equals(userId) && entry.getActive() == 1) {
-                entry.setActive(0);
-                return liveUserSearchRepository.save(entry);
-            }
+    public String getUnreadMatch(Long userId) {
+        List<LiveUserSearch> unreadMatches = liveUserSearchRepository.findUnreadMatches(userId);
+
+        if (!unreadMatches.isEmpty()) {
+            LiveUserSearch match = unreadMatches.get(0); // Fetch the first match
+
+            // Mark the match as read
+            match.setReadMessage(1);
+            liveUserSearchRepository.save(match);
+
+            return "Match found with User ID: " + match.getMatchedUserId();
         }
 
-        return null;
+        return "No unread matches found.";
     }
 
-    public boolean isUserLive(Long userId) {
-        List<LiveUserSearch> userEntries = liveUserSearchRepository.findAll();
-        for (LiveUserSearch entry : userEntries) {
-            if (entry.getUserId().equals(userId) && entry.getActive() == 1) {
-                return true;
-            }
-        }
 
-        return false;
-    }
-
-    public boolean isMatched(Long id) {
-        List<LiveUserSearch> userEntries = liveUserSearchRepository.findAll();
-        for (LiveUserSearch entry : userEntries) {
-            if (entry.getId().equals(id) && entry.getMatchedUserId() != 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    @Value("${api.url}")
-    private String apiUrl;
-
-    //POST to group service to create a group
     private void pushGroupToService(List<Long> userIds, String game, List<String> preferences, String groupName) {
         Map<String, Object> groupPayload = new HashMap<>();
         groupPayload.put("groupName", groupName);
         groupPayload.put("groupDescription", String.join(", ", preferences));
         groupPayload.put("userIds", userIds);
 
-        String apiEndpoint = apiUrl + "/group/api/group/new";
+        String apiEndpoint = groupApiBaseUrl + "/group/api/group/new";
         //String apiEndpoint = "http://gateway:8080/group/api/group/new";
         RestTemplate restTemplate = new RestTemplate();
         try {
@@ -137,4 +173,40 @@ public class LiveUserSearchService {
             System.err.println("Error while pushing group: " + e.getMessage());
         }
     }
+
+
+    public LiveUserSearch stopLive(Long userId) {
+        List<LiveUserSearch> userEntries = liveUserSearchRepository.findByUserIdAndActive(userId, 1);
+        for (LiveUserSearch entry : userEntries) {
+            entry.setActive(0);
+            entry.setScaledDownKC(entry.getCombinedKC());
+            return liveUserSearchRepository.save(entry);
+        }
+        return null;
+    }
+
+    public List<LiveUserSearch> getUnreadMatches(Long userId) {
+        return liveUserSearchRepository.findUnreadMatches(userId);
+    }
+
+
+    public boolean isUserLive(Long userId) {
+        List<LiveUserSearch> userEntries = liveUserSearchRepository.findAll();
+        for (LiveUserSearch entry : userEntries) {
+            if (entry.getUserId().equals(userId) && entry.getActive() == 1) {
+                return true;
+            }
+        }
+        return false;
+
+
+
+
+
+
+
+
+
+    }
+
 }
