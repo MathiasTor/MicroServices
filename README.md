@@ -1,6 +1,11 @@
 
 # PG3402 Microservices exam
-## _PlayPal delivery group: 21320193_
+## _PlayPal delivery_
+- Candidate number: 49
+- Candidate number: 55
+- Candidate number: 38
+- Candidate number: 58
+- Candidate number: Maiwand
 
 ## **__1. Introduction and Overview__**
 **___PlayPal___** is a groundbreaking social group-finding application designed to bring gamers together from all around the world. Whether you're looking for teammates to tackle challenging in-game content, casual friends to share fun moments with, or competitive partners to climb the ranks, PlayPal offers the tools to connect you with the perfect match.
@@ -32,12 +37,7 @@ Replace `<project-directory>` with the name of the folder created by cloning.
 
 ----
 
-**2. Navigate to the root directory of each service and run:**
-```
-mvn clean install
-```  
-
-***Alternatively, you can use the provided script to build all services automatically:***  
+***You can use the provided script to build all services automatically:***  
 (**_Ensure the script is executed from the root folder and that you're using a Bash-compatible terminal._**)
 ```
 ./build-services.sh
@@ -45,6 +45,10 @@ mvn clean install
 > [!IMPORTANT]
 >  If "Permission denied" run: chmod u+x build-services.sh
 
+***2. Alternatively, navigate to the root directory of each service and run:***
+```
+mvn clean install
+```  
 
 ### **__Option 1: Container/Docker build and run__**
 
@@ -69,7 +73,7 @@ This can also be automated if you run the build-docker.sh bash script in root.
 
 ***Alternatively, you can set up manually:***  
 Make sure docker engine is running, for example through docker desktop.  
-To run these commands, make sure you're in root folder of the project.
+To run these commands, make sure you're in **root** folder of the project.
 - `docker build -t communication-service:1.0 ./playpal-communication-service`
 - `docker build -t profile-service:1.0 ./playpal-profile-service`
 - `docker build -t friend-service:1.0 ./playpal-friend-service`
@@ -186,6 +190,7 @@ Users can search for active users and befriend them, search live for other playe
 - User Service: Handles registration and login.
 - Profile service: Creation of profiles, which allows for interaction.
 - Group Service: Creates groups with applicants or people found through live search.
+- Gateway Service: Routes incoming requests to the correct microservices.
 - Frontend to show all the functionality.
 
 **Story 2:** View User Profiles
@@ -212,8 +217,8 @@ while accepting group with multiple users makes conversation for those users.
 _All of our initial user stories are implemented with full functionality._
 We've also expanded upon our initial user stories to include more functionality.  
 This includes: 
-- Being able to link your profile to an external RuneScape api, and then showcase the stats with updates.
-- Generate AI image for your profile.
+- Being able to link your profile with RuneScape, fetching a GET from RuneScape High Scores, and then showcase the stats with updates.
+- Generate AI image for your profile through an external openAI DALL-E api.
 - Upvote and downvote system for profiles.
 - Leaderboard showcasing both overall kills, and a weekly updated leaderboard.
 - Live search functionality for matching with other users with an algorithm on RuneScape stats.
@@ -224,7 +229,7 @@ With this added functionality we also get to address the original user stories, 
 
 ### **Additional "user story" test, with full workflow suggestion:**
 
-_To test all the microservices' functionality , we suggest the following workflow:_  
+**_To test all the microservices' functionality , we suggest the following workflow:_** 
 
 "**Story 4:** As a user I want to use a runescape group-finder application to find people to play with."
 
@@ -350,16 +355,7 @@ The **Group Service** handles group creation automatically, and when it creates 
 The **Live Search Service** handles live search functionality, and matches users based on their RuneScape stats. This service communicates synchronously with the **Runescape Service**, and the **Group Service** to get the stats, and to create the group when matched.  
 The **RuneScape Service** handles fetching of RuneScape stats for other services.  
 The **Leaderboard Service** communicates with the **RuneScape Service** with synchronous communication to get the stats, and then creates a leaderboard based on the stats.
-Gateway Service Details:
-
-Explain how the gateway routes external calls.
-    Mention load balancing if implemented.
-
-Configuration and Health Checks:
-
-Show how Consul is used to manage configuration centrally.
-    Explain how to access health check endpoints (e.g., http://localhost:<service-port>/actuator/health).
-    Show a sample healthy response ({"status":"UP"}).
+Each service has Spring Boot Actuator, which is necessary for Consul to discover them.
 
 ## **__5. Reflections on Architecture Choices__**
 
@@ -369,10 +365,9 @@ As an example, a post is created, and then a group is created, and then a chat i
 There is no purpose of the post, if no group is created.
 
 
-We made changes to our architecture from the initial proposal in the arbeidskrav.  
+We made changes to our architecture from the initial proposal in the arbeidskrav, but still stayed true to the original idea and concept.
 As our project grew, we realized that a more separated approach would be beneficial.  
-We also realized that we had to separate concerns out further, as well as focus on key services, rather than some unecessary front-end ones.
-
+We also realized that we had to separate concerns out further, as well as focus on key services, rather than some unecessary front-end ones.  
 This resulted in more services, and a more complex architecture, with some changes, but also a more scalable, maintainable and functional one.
 
 One of the key changes was to not create a separate service for the storage, but rather let each individual service have their own database.
@@ -382,11 +377,12 @@ It also means that services can do what they are intended to do, even if other s
 We also decided to remove notification service, as the focus of this exam was not on frontend. As we already had quite a big frontend, 
 we decided to focus on the backend services, and the communication between them.
 
+
 We also renamed some of the services to better reflect their functionality, and to make it easier to understand what they do.
+The added functionality required some new services, such as leaderboard service, RuneScape service and Live Search Service. 
 
-Due to the changes in architecture, we also had to change the sync/async communication between services. This is reflected in our new architecture diagram.
+Due to the changes in architecture, we also had to change the sync/async communication between services. This is displayed in our new architecture diagram.
 
-**CHANGES FROM ARBEIDSKRAV**
 
 **Meeting Project Guidelines**
 Below is a summary of how PlayPal meets each of the microservice-specific and architectural requirements outlined in the exam:
@@ -397,7 +393,6 @@ User, Profile, Live-Search, Communication, Group, and more. Each has a specific 
 
 - Synchronous Communication:
     The system includes a lot of synchronous communication as shown in the architecture. 
-The User Service calls the Profile Service via REST to retrieve user details.
 
 - Asynchronous Communication:
     The system includes asynchronous communication with RabbitMQ as shown in the architecture. 
@@ -411,7 +406,7 @@ For example, search post creation events are published to RabbitMQ, consumed by 
 
 - Centralized Health Monitoring and configuration:
     Spring Boot Actuator health endpoints (/actuator/health) provide a simple means to check each service’s status.
- Consul manages service configurations. Consul also checks whether a service is "status":"UP", through our actuator health points (f.example. localhost:8080/group/actuator/health)
+ Consul manages service configurations. Consul also checks whether a service is "status":"UP", through our actuator health points.
     
 - Containerization:
     All services are containerized with Docker, and are running and interacting with each other. Build and run instructions are detailed in Section 2.
@@ -440,7 +435,7 @@ _Here's a breakdown of our contributions (based on initial responsibilities, but
 Worked on rabbitMQ and event driven.
   - Helped everyone else with their services/tasks.
 - **Mathias:**
-  - **Responsibility:** Frontend, RuneScape Service, Friend Service, general overview.
+  - **Responsibility:** Frontend, RuneScape Service, Friend Service, Live Search Service, general overview.
   - **Contributions:** Implemented most of the necessary frontend for our application. Worked on Runescape service and friend service, and also adjusted services as needed for correct system flow/architecture.
 Due to having control of frontend, had a good overview of everyone else's work / services.
   - Helped everyone else with their services/tasks.
@@ -491,7 +486,6 @@ If you would like to test some functionality through Postman instead of our fron
 - **Frontend:**
     - **All endpoints:** Routes to the correct service endpoints.
 - **Consul:**
-```
 
 
-Join us as we redefine how gamers connect and play together. Welcome to PlayPal, where your next adventure begins.
+Thank you for checking out PlayPal!
