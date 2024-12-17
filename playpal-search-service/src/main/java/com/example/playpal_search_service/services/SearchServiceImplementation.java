@@ -2,7 +2,6 @@ package com.example.playpal_search_service.services;
 
 
 import com.example.playpal_search_service.EventDriven.SearchEventPublisher;
-import com.example.playpal_search_service.clients.UserClient;
 import com.example.playpal_search_service.dtos.SearchEndedEvent;
 import com.example.playpal_search_service.dtos.SearchPostDTO;
 import com.example.playpal_search_service.model.SearchPost;
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
 public class SearchServiceImplementation implements SearchService {
 
     private final SearchRepository repository;
-    private final UserClient userClient;
     private final SearchEventPublisher searchEventPublisher;
 
     @Override
@@ -34,9 +32,7 @@ public class SearchServiceImplementation implements SearchService {
         post.setUpdatedAt(LocalDateTime.now());
         post = repository.save(post);
 
-        // Fetch User Name (Optional)
-        String userId = userClient.getUserName(postDTO.getUserId());
-        log.info("Search post created by user: {}", userId);
+        log.info("Search post created by user: {}", post.getUserId());
         return mapToDTO(post);
     }
 

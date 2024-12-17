@@ -24,14 +24,7 @@ public class SearchController {
     public SearchPostDTO createPost(@RequestBody SearchPostDTO postDTO) {
         return searchService.createPost(postDTO);
     }
-
-    @GetMapping("/validate/{userId}")
-    public boolean validateUser(@PathVariable Long userId) {
-        // Mock logic: Return true for even IDs, false for odd IDs
-        //return userId % 2 == 1;
-        return true;
-    }
-
+    
     @GetMapping("/all")
     public List<SearchPostDTO> getAllPosts() {
         return searchService.getAllPosts();

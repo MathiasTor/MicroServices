@@ -83,8 +83,7 @@ Verify installation by running:
 ---
 
 > [!IMPORTANT]
->  If "Permission denied" run: chmod u+x build-services.sh
-This can also be automated if you run the build-docker.sh bash script in root.
+>  If "Permission denied" run: chmod u+x build-docker.sh
 
 ---
 
@@ -113,11 +112,12 @@ docker-compose up --build
 
 This will run all the docker containers and images according to the configurations.
 
-When this is done, you can access the frontend on `localhost:3000`, and the backend services on their respective ports (addressed at the end of this section).
+When this is done, you can access the frontend on `localhost:3000`, and the backend services on their respective ports (addressed at the end of this section).  
+Due to the nature of our system, combined with the size, we've created an extensive frontend for testing purposes. Please utilize it as much as possible to test required functionality, and endpoints.
+
 
 ----
 
-Due to the nature of our system, combined with the size, we've created an extensive frontend for testing purposes. Please utilize it as much as possible to test required functionality, and endpoints.
 
 ### **__Option 2: Local Setup (without docker)__**
 Follow these steps to build and run the project without Docker.  
@@ -128,7 +128,7 @@ This will require some tools installed on your system.
 - **RabbitMQ:** For asynchronous communication and messaging if used locally.
 - **Postman** (_optional_): For testing API endpoints directly.
 - **Consul**: Centralized configuration management and service discovery tool.
-- **Frontend**: For displaying the frontend, node.js must be installed on the computer. Verify installation by running:  
+- **Node.js**: For displaying the frontend, node.js must be installed on the computer. Verify installation by running:  
   **`node --version`**
 
 Run commands to start RabbitMq (or use app RabbitMQ service - start. You can also use sudo.)
@@ -143,7 +143,7 @@ consul agent -dev -node playpal-local-dev-node
 **4. Run the services:**  
 Navigate to each service directory and run the service using Maven.
 ```
-cd your-service-directory
+cd service-directory
 mvn spring-boot:run
 ```
 
@@ -153,11 +153,12 @@ mvn spring-boot:run
 Navigate to playpal-frontend and run.
 ```
 cd playpal-frontend
-npm i
+npm install
 npm start
 ```
 ### **Ports and logins**
-These are the ports for the respective services, but to use them you need to use our gateway routing at localhost:8080.
+These are the initial ports that services start at. You can either access them directly, or as recommended by us through the gateway.  
+They are defined by their service names as prefix, such as search service = localhost:8080/search/** , localhost:8080/group/**.
 - **Frontend:** `3000`
 - **Search Service:** `9091`
 - **Runescape Service:** `9002`
@@ -176,12 +177,13 @@ These are the ports for the respective services, but to use them you need to use
 
 **Post-Setup Verification:**
 
-Check localhost:8500 to see if consul is running, and if all services are green. This means the health checks are "UP", and therefore running.
+Check localhost:8500 to see if consul is running, and if all services are "healthy". This means the health checks are "UP" on the actuator/health endpoint, and therefore running.
 
 You can also check Dozzle centrallized logging to check the active running services and their logs.
 (localhost:9090)
-Dozzle also has a mode called "swarm-mode". **Make sure to enable this**.  
-With this we have created labels that group different parts of our project/services.
+Dozzle also has a mode called "swarm-mode". 
+With this we have created labels that group different parts of our project/services.  
+You can either use the swarm mode to see a grouping of the logs, or you can leave it off to see the logs of each individual service in their respective panels.
 
 
 ## **__3. User Stories and Functionality__**
@@ -203,35 +205,43 @@ Users can search for active users and befriend them, search live for other playe
 
 *Services Involved:*
 
-- Search Service: Handles search logic and matchmaking.
+- Search Service: Handles creation of posts.
 - Live-search Service: Handles live matchmaking with algorithm for matching.
 - Runescape Service: Fetches runescape stats for matching algorithm, and profile showcasing.
 - User Service: Handles registration and login.
-- Profile service: Creation of profiles, which allows for interaction.
-- Group Service: Creates groups with applicants or people found through live search.
+- Profile service: Creation of profiles, which allows for interaction, as well as the voting system.
+- Group Service: Creates groups with applicants from the posts, people found through live search or separate group creation.
 - Gateway Service: Routes incoming requests to the correct microservices.
 - Frontend to show all the functionality.
 
 **Story 2:** View User Profiles
 
-Users can view profiles. With this they can look at their RuneScape stats if they're linked to assess their skills and experience. 
-Upvoting and downvoting system in case someone makes for a bad experience, or vice versa. AI generated images.
+Users can view their own profile, as well as other users profiles. With this they can look at their RuneScape stats if they're linked to assess their skills and experience. 
+Upvoting and downvoting system in case someone makes for a bad experience, or vice versa.  
+And AI generated profile picture.
 
 *Services Involved:*
-- Same services as user story 1.
-- Additionally, Runescape Service for fetching runescape stats and showcasing them.
+- User Service: Handles registration and login.
+- Profile Service: Handles creation of profiles, and manages the vote system.
+- Runescape Service: Fetches runescape stats for profile showcasing.
+- Gateway Service: Routes incoming requests to the correct microservices.
+- Frontend to show all the functionality.
 
 **Story 3:** Communicate with other users.
 
-Users can communicate with other users through chat and messages.
+Users can communicate with other users either through private messages, or group messages.
 Full functionality for chatting with other users with websockets through gateway.  
-Chats generated automatically through communication service, based on what happens. 
-For example, Live Search generated group creates a conversation between those two, 
-while accepting group with multiple users makes conversation for those users.  
+Chats are created through the communication service. Either upon group creation, befriending other users, or by creating your own direct message. 
+For example, creating a group will create chat for that group. Another example is adding a friend, this will create a DM between the two users.  
+Users can also start a chat with other users, without friending them.
 
 *Services Involved:*
-- Same services as user story 1 and 2.
+- User Service: Handles registration and login.
+- Friend Service: Handles befriending and blocking users.
+- Group Service: Creates groups, and handles group communication.
 - Communication Service: Handles real-time chatting and messaging with websockets.
+- Gateway Service: Routes incoming requests to the correct microservices.
+- Frontend to show all the functionality.
 ---
 _All of our initial user stories are implemented with full functionality._
 We've also expanded upon our initial user stories to include more functionality.  
@@ -239,7 +249,7 @@ This includes:
 - Being able to link your profile with RuneScape, doing a GET to RuneScape High Scores, and then showcase the stats with updates.
 - Generate AI image for your profile through an external openAI DALL-E api.
 - Upvote and downvote system for profiles.
-- Leaderboard showcasing both overall kills, and a weekly updated leaderboard.
+- Leaderboard showcasing both overall raid completions, and a weekly updated leaderboard.
 - Live search functionality for matching with other users with an algorithm on RuneScape stats.
 
 
@@ -255,7 +265,7 @@ With this added functionality we also get to address the original user stories, 
 ---
 
 > [!NOTE]
-> In general, the frontend should be quite intuitive, so try to click around and use the functionality, on correct different browser-users.
+> In general, the frontend should be quite intuitive, so try to click around and use the functionality.
 However, below we have a full workflow explaining steps to test functionality detailed. Hopefully it is helpful.
 
 ---
@@ -269,7 +279,7 @@ Afterward, create the users, and confirm that your profile page/cookie ID remain
 
 ---
 
-The first thing you have to do is to register multiple users. Here are some example users you can use:
+The first thing you have to do is to register multiple users. Here are some example users you can register:
 ```
 username: bob
 email: bob@123.no
@@ -301,13 +311,13 @@ Press submit, and view your own post. Go on another browser/user, click home pag
 You should now see the post you created. Apply to the group. Go back to the user that created the post, and refresh (no websockets on this page, only communication).
 There should be an applicant. Approve it.  
 You now have a state of a group, but it hasn't been created yet. To create the group (when you're happy with the amount of users), Stop the Search for participants.
-The group will now be created, and you can see it under the group tab. You can also chat with the group under the group location under group tab.
+The group will now be created, and you can see it under the group tab. You can also chat with the group.
 
 You can also then add users to this existing group, in the "Add people by Username" field. Add your last user to this group, and check the group tab.
 You can also statically create your own group, and invite to it under the group tab. 
 
-If you enter the home page, you should be able to click the profile of another user under "approved users". Do this to enter his profile (not yours).
-This should bring you to a URL with the user's ID profile. Here you can see his stats when you're linked with runescape (we will do this later), and you can upvote / downvote.
+On the post page, usernames are clickable, and should navigate to their profile pages. Click one profile to view their profile (not yours).
+This should bring you to a URL with the user's ID profile. Here you can see their stats if they are linked with a runescapep account(we will do this later), and you can upvote / downvote.
 You can confirm that the upvotes work by entering another browser/user to see if it updated.
 
 In the bottom right, you can add friends, and access direct message chats. Test these buttons with the user's names.  
@@ -336,28 +346,25 @@ User 3: (per from our example)
 RuneScape Username to Link with: erntt
 ```
 Now that you've linked the profiles. You can go to the leaderboard tab, and see the leaderboard. If it hasn't updated yet, wait for the 30-second update timer. 
-This displays the overall kills of each user, and also has a weekly leaderboard, that updates monday 12 o'clock every week, to see who won the most kills that week.
+This displays the overall raid completions of each user, and also has a weekly leaderboard, that updates monday 12 o'clock every week, to see who won the most raid completions that week.
 
-_As you just started, the weekly leaderboard doesn't have any kills, but we attached some images of functioning weekly leaderboard._
+_As you just started, the weekly leaderboard doesn't have any raid completions, but we attached some images of functioning weekly leaderboard._
 
-if you click the profiles of other users again, from the home page, you should now see their runescape stats and kills on their profile.
+if you click the profiles of other users again, from the post page, you should now see their runescape stats and raid completions on their profile.
 
-Lastly, we have a live-search algorithm using the collected kill counts of the RuneScape accounts, to match the players based on their skill level/play amount. 
-It will match you with the closest user to your own kill count. The kill count treshold will decrease the longer you're in queue, to a max percentage of 50% of the total amount of the user's kill count.
+Lastly, we have a live-search algorithm using the sum of collected raid completions of the RuneScape accounts, to match the players based on their skill level/experience. 
+It will match you with the closest user to your own raid completion count. The threshold will decrease the longer you're in queue, to a max percentage of 50% of the total amount of the user's raid completions.
 Because of this, to match two users, you need to be sure that the users you go live with are within each other's 50% range. 
 
-For testing purposes, it will decrease the treshold every 5 seconds, to reach 50% after 25 seconds. In real use it would be higher with more users.
+For testing purposes, it will decrease the threshold every 5 seconds, to reach 50% after 25 seconds. In real use it would be higher with more users.
 
-Therefore, to test this functionality, go live on user 2(kari from our example, or the user linked with the highest score "a cold one").  
-Then go live on user 1(bob from our example, or the user linked with the middle score "woox").  
+Therefore, to test this functionality, go live on user 2(kari from our example, or the **user linked with the highest score "a cold one")**.  
+Then go live on user 1(bob from our example, or the **user linked with the middle score "woox")**.  
 Since these users are too far apart, no match will be found.
-Proceed to go live on user 3(per from our example, or the user linked with the lowest score "erntt").  
+Proceed to go live on user 3(per from our example, or the **user linked with the lowest score "erntt")**.  
 You should now match with the fitting other player, a group should be created, and a conversation should be created.
 
-If you have any issues, remember to refresh the page, as the frontend doesn't always update as only communication service has websockets through the gateway.
-```
-Relevant Endpoints: Link to section on some endpoints: [Link Text](#Relevant-Endpoints).
-```
+If you have any issues, remember to refresh the page, as the frontend doesn't always update as only communication service has websockets.
 
 ## **__4. Project Architecture__**
 
