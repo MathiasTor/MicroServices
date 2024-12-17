@@ -475,8 +475,6 @@ These are just some of the endpoints, and we recommend you to look at the code t
    - **POST /group/api/group/new:** Create a group.
    - **GET /group/api/group/all :** Get all groups.
    - **GET /group/api/group/id/:id :** Get a specific group by id.
-- **Live Search Service:**
-   
 - **RuneScape Service:**
     - **POST /runescape/api/runescape/link-user/{userid}/{runescapeName} :** Link a user to a RuneScape account.
     - **GET /runescape/api/runescape/stats/{username} :** Get RuneScape stats for a user.
