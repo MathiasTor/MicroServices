@@ -66,7 +66,7 @@ public class GroupController {
     public void removeUserFromGroup(@PathVariable Long groupId, @PathVariable Long userId) {
         groupService.removeUserFromGroup(groupId, userId);
     }
-
+    
     @GetMapping("/user/{userId}")
     public List<Group> getGroupsForUser(@PathVariable Long userId) {
         return groupService.getGroupsForUser(userId);

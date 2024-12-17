@@ -1,6 +1,5 @@
 package com.example.playpalgroupservice.model;
 
-import com.example.playpalgroupservice.dto.UserDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

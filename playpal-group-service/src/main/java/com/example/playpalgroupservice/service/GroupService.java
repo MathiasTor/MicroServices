@@ -2,7 +2,6 @@ package com.example.playpalgroupservice.service;
 
 import com.example.playpalgroupservice.dto.GroupDTO;
 import com.example.playpalgroupservice.dto.SearchEndedEvent;
-import com.example.playpalgroupservice.dto.UserDTO;
 import com.example.playpalgroupservice.eventdriven.GroupEventPublisher;
 import com.example.playpalgroupservice.model.Group;
 import com.example.playpalgroupservice.repository.GroupRepository;
@@ -20,7 +19,6 @@ import java.util.List;
 @Slf4j
 public class GroupService {
 
-    private final RestTemplate restTemplate;
     private final GroupRepository groupRepository;
     private final GroupEventPublisher groupEventPublisher; // Add this dependency
 
@@ -28,8 +26,8 @@ public class GroupService {
     private String userServiceUrl; // Base URL of User service (e.g., http://user-service)
 
     @Autowired
-    public GroupService(RestTemplate restTemplate, GroupRepository groupRepository, GroupEventPublisher groupEventPublisher) {
-        this.restTemplate = restTemplate;
+    public GroupService( GroupRepository groupRepository, GroupEventPublisher groupEventPublisher) {
+
         this.groupRepository = groupRepository;
         this.groupEventPublisher = groupEventPublisher;
     }
@@ -91,7 +89,7 @@ public class GroupService {
     }
 
     public List<Long> getUserIdsForGroup(Long groupId) {
-        // Find the group by its ID
+
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new RuntimeException("Group not found with ID: " + groupId));
 
