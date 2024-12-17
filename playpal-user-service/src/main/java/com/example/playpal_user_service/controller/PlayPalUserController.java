@@ -28,7 +28,7 @@ public class PlayPalUserController {
         return playPalUserService.getUserName(userId);
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<PlayPalUser>> getAllUsers() {
         return ResponseEntity.ok(playPalUserService.getAllUsers());
     }

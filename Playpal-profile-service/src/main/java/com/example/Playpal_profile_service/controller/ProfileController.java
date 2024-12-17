@@ -34,6 +34,12 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.createProfile(profile));
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<PlaypalProfile>> getAllProfiles() {
+        return ResponseEntity.ok(profileService.getAllProfiles());
+    }
+
+
     @PutMapping("/{userId}")
     public ResponseEntity<PlaypalProfile> updateProfile(
             @PathVariable Long userId,

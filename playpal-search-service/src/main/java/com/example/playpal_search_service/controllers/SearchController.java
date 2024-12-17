@@ -32,7 +32,7 @@ public class SearchController {
         return true;
     }
 
-    @GetMapping("/posts")
+    @GetMapping("/all")
     public List<SearchPostDTO> getAllPosts() {
         return searchService.getAllPosts();
     }

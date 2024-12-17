@@ -456,15 +456,21 @@ Due to having control of frontend, had a good overview of everyone else's work /
 
 ## **__8. Relevant-Endpoints__**
 If you would like to test some functionality through Postman instead of our frontend, we have listed some relevant endpoints below.
-
+These are just some of the endpoints, and we recommend you to look at the code to see all the endpoints.
 
 - **User Service:**
-    - **POST /user/api/users/:** Register a new user.
-   
+    - **POST /user/api/users/:** Register a new user. ** username, email, password json object**
+    - **GET /user/api/users/all:** Get all users.
+    - **GET /user/api/users/{id} :** Get a specific user by id.
 - **Profile Service:**
-   
+    - **POST /profile/api/profiles/:** Create a profile. || profile is made automatically when user is created.
+    - **GET /profile/api/profiles/all:** Get all profiles. 
 - **Search Service:**
-   
+    - **POST /search/api/search/posts:** Create a search post.
+    - **POST /search/api/search/posts/apply/{postId}/{userId} :** Apply to a search post.
+    - **POST /search/api/search/posts/approve/{postId}/{userId} :** Approve an applicant to a search post.
+    - **POST /search/api/search/posts/stop/{id} :** Stop search for participants.
+    - **GET /search/api/search/all :** Get all search posts.
 - **Group Service:**
    - **POST /group/api/group/new:** Create a group.
    - **GET /group/api/group/all :** Get all groups.
@@ -472,16 +478,25 @@ If you would like to test some functionality through Postman instead of our fron
 - **Live Search Service:**
    
 - **RuneScape Service:**
-
+    - **POST /runescape/api/runescape/link-user/{userid}/{runescapeName} :** Link a user to a RuneScape account.
+    - **GET /runescape/api/runescape/stats/{username} :** Get RuneScape stats for a user.
+    - **GET /runescape/api/runescape/fetch-stats/{runescapeName} :** Fetch RuneScape stats for a user.
 - **Leaderboard Service:**
+    - these endpoints will only work when an runescape account is linked with user id.
    - **GET /leaderboard/api/leaderboard/overall:** Get overall leaderboard.
    - **GET /leaderboard/api/leaderboard/weekly:** Get weekly leaderboard.
    - **GET /leaderboard/api/leaderboard/weekly/update:** Update weekly leaderboard.
    - **GET /leaderboard/api/leaderboard/overall/update:** Update overall leaderboard.
 - **Communication Service:**
-   
+   - **POST /communication/api/conversations :** Create a new chat.
+   - **POST /communication/api/conversations/dm :** Create a new direct message chat.
+   - **GET /communication/api/conversations/all :** Get all conversations.
+   - **GET /communication/api/conversations/{conversationId}/details :** Get conversation details.
 - **Friend Service:**
-   
+   - **POST /friend/api/friends/send-request/{userId}/{friendId} :** Send a friend request.
+   - **POST /friend/api/friends/add-friend/{userId}/{friendId} :** Accept a friend request.
+   - **POST /friend/api/friends/block/{userId}/{friendId} :** Block a user.
+   - **GET /friend/api/friends/get-friends/{userId} :** Get all friends for a user.
 - **Gateway Service:**
     - **All endpoints:** Routes incoming requests to the correct microservices.
 - **Frontend:**
