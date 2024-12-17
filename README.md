@@ -470,12 +470,18 @@ If you would like to test some functionality through Postman instead of our fron
 - **Search Service:**
    
 - **Group Service:**
-   
+   - **POST /group/api/group/new:** Create a group.
+   - **GET /group/api/group/all :** Get all groups.
+   - **GET /group/api/group/id/:id :** Get a specific group by id.
 - **Live Search Service:**
    
 - **RuneScape Service:**
+
 - **Leaderboard Service:**
-   
+   - **GET /leaderboard/api/leaderboard/overall:** Get overall leaderboard.
+   - **GET /leaderboard/api/leaderboard/weekly:** Get weekly leaderboard.
+   - **GET /leaderboard/api/leaderboard/weekly/update:** Update weekly leaderboard.
+   - **GET /leaderboard/api/leaderboard/overall/update:** Update overall leaderboard.
 - **Communication Service:**
    
 - **Friend Service:**
