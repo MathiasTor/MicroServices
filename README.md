@@ -33,44 +33,60 @@ Navigate to root project folder with cd command based on where project's located
 git clone https://github.com/MathiasTor/MicroServices.git
 cd <project-directory>
 ```
-Replace `<project-directory>` with the name of the folder created by cloning.
+Replace `<project-directory>` with the path of the folder created by cloning.
 
 ----
+**Prerequisites**
+
+- **Maven:** Required to build the services locally.
+- **Node**: For displaying the frontend, node.js must be installed on the computer. Verify installation by running:  
+  **`node --version`**
 
 ***You can use the provided script to build all services automatically:***  
 (**_Ensure the script is executed from the root folder and that you're using a Bash-compatible terminal._**)
 ```
 ./build-services.sh
 ```
+---
+
 > [!IMPORTANT]
 >  If "Permission denied" run: chmod u+x build-services.sh
 
+---
 ***2. Alternatively, navigate to the root directory of each service and run:***
 ```
-mvn clean install
+mvn clean install -DSkipTests
 ```  
-*** Note if build fails when running mvn clean install in each service, the reason might be that it is the tests that are making it fail. then try mvn clean install -DskipTests and it should build
 
 ### **__Option 1: Container/Docker build and run__**
 
 **Prerequisites**  
-PlayPal is fully containerized using Docker, ensuring that it can run seamlessly on any system with Docker installed. The only requirements for running the project are therefore:
+PlayPal is fully containerized using Docker, ensuring that it can run seamlessly on any system with Docker installed.
 - **Docker:** Ensure Docker is installed and running on your system.
 Verify installation by running:
 
   **`docker --version`**
 
+
+---
+
 > [!NOTE]
 > Since the services are containerized, they should work on any operating system that supports Docker (Linux, macOS, or Windows).
+
+---
 
 **Use the provided script to build all images automatically:**
 (**_Ensure the script is executed from the root folder and that you're using a Bash-compatible terminal._**)
 ```
 ./build-docker.sh
 ```
+---
+
 > [!IMPORTANT]
 >  If "Permission denied" run: chmod u+x build-services.sh
 This can also be automated if you run the build-docker.sh bash script in root.
+
+---
 
 ***Alternatively, you can set up manually:***  
 Make sure docker engine is running, for example through docker desktop.  
@@ -85,7 +101,7 @@ To run these commands, make sure you're in **root** folder of the project.
 - `docker build -t user-service:1.0 ./playpal-user-service`
 - `docker build -t gateway:1.0 ./playpal-gateway`
 - `docker build -t frontend:1.0 ./playpal-frontend`
-- `docker build -t livesearch-service2:1.0 ./playpal-livesearch-service2`
+- `docker build -t livesearch-service:1.0 ./playpal-livesearch-service`
 
 **Running the containers:**  
 Navigate to docker directory and run docker compose file.
@@ -141,6 +157,7 @@ npm i
 npm start
 ```
 ### **Ports and logins**
+These are the ports for the respective services, but to use them you need to use our gateway routing at localhost:8080.
 - **Frontend:** `3000`
 - **Search Service:** `9091`
 - **Runescape Service:** `9002`
@@ -235,18 +252,22 @@ With this added functionality we also get to address the original user stories, 
 
 "**Story 4:** As a user I want to use a runescape group-finder application to find people to play with."
 
+---
+
 > [!NOTE]
 > In general, the frontend should be quite intuitive, so try to click around and use the functionality, on correct different browser-users.
 However, below we have a full workflow explaining steps to test functionality detailed. Hopefully it is helpful.
 
-
+---
 
 > [!WARNING]
 > **_This application is meant to be used across different systems. If you test locally, there might be some
 interfering issues with cookies. It's therefore very important to make sure that your cookies are individual for each user on page refresh,
 to be able to test the functionality._**  
 > **_We recommend to open a browser, and an incognito tab of that same browser, and a separate third browser. Or three separate browsers.
-Afterward, create the users, and confirm that your profile page/cookie ID remains the same as the correct user you logged in as._**
+Afterward, create the users, and confirm that your profile page/cookie ID remains the same as the correct user you logged in as on each browser._**
+
+---
 
 The first thing you have to do is to register multiple users. Here are some example users you can use:
 ```
@@ -329,7 +350,7 @@ For testing purposes, it will decrease the treshold every 5 seconds, to reach 50
 
 Therefore, to test this functionality, go live on user 2(kari from our example, or the user linked with the highest score "a cold one").  
 Then go live on user 1(bob from our example, or the user linked with the middle score "woox").  
-Since these user's are too far apart, no match will be found.
+Since these users are too far apart, no match will be found.
 Proceed to go live on user 3(per from our example, or the user linked with the lowest score "erntt").  
 You should now match with the fitting other player, a group should be created, and a conversation should be created.
 
