@@ -114,14 +114,6 @@ This will require some tools installed on your system.
 - **Frontend**: For displaying the frontend, node.js must be installed on the computer. Verify installation by running:  
   **`node --version`**
 
-
-**4. Run the services:**  
-Navigate to each service directory and run the service using Maven.
-```
-cd your-service-directory
-mvn spring-boot:run
-```
-
 Run commands to start RabbitMq (or use app RabbitMQ service - start. You can also use sudo.)
 ```
 rabbitmq-server
@@ -130,6 +122,15 @@ Run commands to start Consul in its own terminal.
 ```
 consul agent -dev -node playpal-local-dev-node
 ```
+
+**4. Run the services:**  
+Navigate to each service directory and run the service using Maven.
+```
+cd your-service-directory
+mvn spring-boot:run
+```
+
+
 
 **5. Run the frontend:**  
 Navigate to playpal-frontend and run.
@@ -162,13 +163,13 @@ Check localhost:8500 to see if consul is running, and if all services are green.
 You can also check Dozzle centrallized logging to check the active running services and their logs.
 (localhost:9090)
 Dozzle also has a mode called "swarm-mode". **Make sure to enable this**.  
-With this we have created labels that group different parts of our project/services to centralize the logging.
+With this we have created labels that group different parts of our project/services.
 
 
 ## **__3. User Stories and Functionality__**
 Image of user stories from Arbeidskrav:
 
-![Screenshot of user stories submitted in arbeidskrav](images/User Stories.jpg)
+![Screenshot of user stories submitted in arbeidskrav](User Stories.jpg)
 
 - [x]  **Story 1: As a user, I want to find people to play with.**
 - [x]  **Story 2: As a user, I want to be able to see ones own and other people's profiles.**
@@ -213,11 +214,11 @@ while accepting group with multiple users makes conversation for those users.
 *Services Involved:*
 - Same services as user story 1 and 2.
 - Communication Service: Handles real-time chatting and messaging with websockets.
-
+---
 _All of our initial user stories are implemented with full functionality._
 We've also expanded upon our initial user stories to include more functionality.  
 This includes: 
-- Being able to link your profile with RuneScape, fetching a GET from RuneScape High Scores, and then showcase the stats with updates.
+- Being able to link your profile with RuneScape, doing a GET to RuneScape High Scores, and then showcase the stats with updates.
 - Generate AI image for your profile through an external openAI DALL-E api.
 - Upvote and downvote system for profiles.
 - Leaderboard showcasing both overall kills, and a weekly updated leaderboard.
@@ -338,19 +339,19 @@ Relevant Endpoints: Link to section on some endpoints: [Link Text](#Relevant-End
 
 ## **__4. Project Architecture__**
 
-![Screenshot of user stories submitted in arbeidskrav](images/Microservices Architecture.png)
+![Screenshot of user stories submitted in arbeidskrav](Microservices Architecture.png)
 
 **Architecture overview:**
 
 The architecture of PlayPal is based on a microservices approach, with each service handling a specific concern. Following the SRP (Single Responsibility Principle).
 
-Our **frontend** is a separate service, which communicates sync with the backend services through the Gateway Service. 
-The **Gateway Service** routes and handles incoming requests to the correct microservices and distributes load evenly. It technically communicates synchronously with all the other services, but it is the only service that communicates with the frontend routing through it.
+Our **frontend** is a separate service, which communicates with the backend services through the Gateway Service. 
+The **Gateway Service** routes and handles incoming requests to the correct microservices and distributes load evenly. It also handles routing with frontend.  
 Our **User Service** handles core user data, such as registration and login. This service communicate asynchronously with the **Profile Service** via rabbitMQ messages to create profiles. 
-When you register a user, a message is published, and listened to from **Profile Service** to create a profile.
+When you register a user, a message is published, and listened to from **Profile Service** to create a profile.  
 We then have the **Search Service**, that handles searching for other users to play with. This service handles creation of posts. and does synchronous communication with the **User Service** to get the usernames.  
 Whenever a post is created, applied to, and then ended - a rabbitMQ message is published, and listened to by the **Group Service** to create a group.  
-The **Group Service** handles group creation automatically, and when it creates a group, it publishes another async message that is communicating with communication service. This flow ensures that no data is lost, and a post is created, and then a group is created, and then a chat is created.  
+The **Group Service** handles group creation automatically, and when it creates a group, it publishes another async message that is listened to by **communication service**. This flow ensures that no data is lost, and a post is created, and then a group is created, and then a chat is created.  
 **Group Service** also communicates synchronously with the **User Service** to get the usernames of the users in the group.
 The **Live Search Service** handles live search functionality, and matches users based on their RuneScape stats. This service communicates synchronously with the **Runescape Service**, and the **Group Service** to get the stats, and to create the group when matched.  
 The **RuneScape Service** handles fetching of RuneScape stats for other services.  
@@ -363,7 +364,6 @@ We set up our communication patterns to be both synchronous and asynchronous fol
 separate concerns, and to have a clear structure of our services. In the services where dataloss could be a problem, we made sure to use RabbitMQ to ensure that no data was lost.
 As an example, a post is created, and then a group is created, and then a chat is created. This is to ensure that no data is lost, and that the flow is correct. 
 There is no purpose of the post, if no group is created.
-
 
 We made changes to our architecture from the initial proposal in the arbeidskrav, but still stayed true to the original idea and concept.
 As our project grew, we realized that a more separated approach would be beneficial.  
@@ -410,6 +410,7 @@ For example, search post creation events are published to RabbitMQ, consumed by 
     
 - Containerization:
     All services are containerized with Docker, and are running and interacting with each other. Build and run instructions are detailed in Section 2.
+We also added centrallized logging for our containers, that was incredibly beneficial for our project as it grew quite large.
 
 ## **__7. Contributions__**
 
