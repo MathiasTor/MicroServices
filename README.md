@@ -374,25 +374,45 @@ If you have any issues, remember to refresh the page, as the frontend doesn't al
 
 The architecture of PlayPal is based on a microservices approach, with each service handling a specific concern. Following the SRP (Single Responsibility Principle).
 
-Our **frontend** is a separate service, which communicates with the backend services through the Gateway Service. 
-The **Gateway Service** routes and handles incoming requests to the correct microservices and distributes load evenly. It also handles routing with frontend.  
+Our **frontend** is a separate service, which communicates with the backend services through the Gateway. 
+The **Gateway** routes and handles incoming requests to the correct microservices and distributes load evenly.  
 Our **User Service** handles core user data, such as registration and login. This service communicate asynchronously with the **Profile Service** via rabbitMQ messages to create profiles. 
 When you register a user, a message is published, and listened to from **Profile Service** to create a profile.  
-We then have the **Search Service**, that handles searching for other users to play with. This service handles creation of posts. and does synchronous communication with the **User Service** to get the usernames.  
+We then have the **Search Service**, that handles searching for other users to play with. This service handles creation of posts. 
 Whenever a post is created, applied to, and then ended - a rabbitMQ message is published, and listened to by the **Group Service** to create a group.  
-The **Group Service** handles group creation automatically, and when it creates a group, it publishes another async message that is listened to by **communication service**. This flow ensures that no data is lost, and a post is created, and then a group is created, and then a chat is created.  
-**Group Service** also communicates synchronously with the **User Service** to get the usernames of the users in the group.
-The **Live Search Service** handles live search functionality, and matches users based on their RuneScape stats. This service communicates synchronously with the **Runescape Service**, and the **Group Service** to get the stats, and to create the group when matched.  
-The **RuneScape Service** handles fetching of RuneScape stats for other services.  
-The **Leaderboard Service** communicates with the **RuneScape Service** with synchronous communication to get the stats, and then creates a leaderboard based on the stats.
-Each service has Spring Boot Actuator, which is necessary for Consul to discover them.
+The **Group Service** handles creation of groups, and when it creates a group, it publishes another async message that is listened to by **communication service**. This flow ensures that no data is lost, and a post is created, and then a group is created, and then a chat is created.  
+The **Live Search Service** handles live search functionality, and matches users based on their RuneScape raids completions. This service communicates synchronously with the **Runescape Service** and the **Group Service**, to get the stats and to create the group when matched.  
+The **RuneScape Service** handles fetching of RuneScape stats from the official RuneScape high scores.  
+The **Leaderboard Service** communicates with the **RuneScape Service** with synchronous communication to get the raid completions, and then creates a leaderboard based on the these stats.
+The **Friend Service** handles befriending and blocking of users. It communicates sync with the **Communication Service** to create a conversation upon befriending.
 
 ## **__5. Reflections on Architecture Choices__**
 
 We set up our communication patterns to be both synchronous and asynchronous following the Microservices Principles. We also made sure to 
-separate concerns, and to have a clear structure of our services. In the services where dataloss could be a problem, we made sure to use RabbitMQ to ensure that no data was lost.
-As an example, a post is created, and then a group is created, and then a chat is created. This is to ensure that no data is lost, and that the flow is correct. 
-There is no purpose of the post, if no group is created.
+separate concerns, and to have a clear structure of our services. In the services where data loss could be a problem, we made sure to use RabbitMQ to ensure that no data was lost.
+  
+As an example, if you create a group, it's important that a chat is generated. If not, you have to recreate the entire group to create a new chat.  
+If communication service was down and a group was created, the message of a conversation/chat would still be sent and listened to as the communication service started up again.
+On the other hand, if you add a friend, it's not strictly necessary to create a conversation between them. This is because you will still have the possibility to create a chat between these two friends at a later time, without having to re-add them.
+
+When a post is stopped, it is crucial that a group is created. If search service and group service communicated synchronously, and the group service was down, no group would be created as a user ended a search post.  
+This is not logical in our system, as a post should always result in the creation of a group. Therefore, we made sure that the communication was async. 
+
+This flow results in a post being stopped, then a group being created, and then a chat being created for that group. No matter the health status of other services. 
+
+When a user registers an account, it's important that a profile is created for that user, hence the asynchronous communication. This is because a user should always have a profile.
+
+The leaderboard service communicates with the Runescape service synchronously, as the leaderboard is based on the stats of the Runescape service. This is because the leaderboard should always be up to date with the stats of the users.
+
+The live search service communicates sync to both the runescape service and the group service. This is because the live search service also need the up-to-date runescape stats.  
+Our reasoning behind the synchronous communication to the group service, is due to the fact that the group should be created as soon as the users are matched.  
+If group service was down when a match was found, creating a group at a later time through an event, would not make logical sense due to the nature of the Live Search Service.  
+If the group creation should for some reason fail, we would not want to find some old matched group at a later time with a random person. It's rather that you want to match right now and play.
+
+
+To prevent coupling between services where it's not strictly needed, we implemented the use of referencing userIDs instead of transferring user objects.  
+By using only a userId in services that need user-related data, we avoid tightly coupling services to the user service.  
+If the user service changes its Model (for example, renaming fields, adding new fields), other services relying only on the userId remain unaffected. This minimizes the ripple effect of changes.
 
 We made changes to our architecture from the initial proposal in the arbeidskrav, but still stayed true to the original idea and concept.
 As our project grew, we realized that a more separated approach would be beneficial.  
@@ -401,16 +421,17 @@ This resulted in more services, and a more complex architecture, with some chang
 
 One of the key changes was to not create a separate service for the storage, but rather let each individual service have their own database.
 This was to ensure that each service could be more independent, and that we could scale them individually if needed.  
-It also means that services can do what they are intended to do, even if other service's databases are down.
+It also means that services can do what they are intended to do, even if other services are down.
 
 We also decided to remove notification service, as the focus of this exam was not on frontend. As we already had quite a big frontend, 
-we decided to focus on the backend services, and the communication between them.
+we decided to focus on the backend services, and the communication between them. Implementing a notification service would only result in a better frontend, but not actually expand on our functionality. 
 
 
-We also renamed some of the services to better reflect their functionality, and to make it easier to understand what they do.
+We also renamed some of the services to better reflect their purpose, and to make it easier to understand what they do.
 The added functionality required some new services, such as leaderboard service, RuneScape service and Live Search Service. 
 
 Due to the changes in architecture, we also had to change the sync/async communication between services. This is displayed in our new architecture diagram.
+
 
 
 **Meeting Project Guidelines**
@@ -441,7 +462,7 @@ For example, search post creation events are published to RabbitMQ, consumed by 
     All services are containerized with Docker, and are running and interacting with each other. Build and run instructions are detailed in Section 2.
 We also added centrallized logging for our containers, that was incredibly beneficial for our project as it grew quite large.
 
-## **__7. Contributions__**
+## **__6. Contributions__**
 
 Our team collaborated effectively to develop PlayPal, with each member contributing to most aspects of the project. 
 Considering this is a group project, we've all contributed to the project in various ways.
@@ -460,22 +481,22 @@ This was mostly to get some services up and running, and to have a starting poin
 **We all worked on all services, and all services were touched by all members.**  
 _Here's a breakdown of our contributions (based on initial responsibilities, but not sole responsibilities):_
 - **Robin:** 
-  - **Responsibility:** Group Service, Leaderboard service.
-  - **Contributions:** Initial creation and work with Group Service, and leaderboard service. Worked on group creation, leaderboards.  
+  - **Responsibility:** Group Service, Leaderboard service, gateway.
+  - **Contributions:** Initial creation and work with Group Service, leaderboard service and gateway. Worked on group creation, leaderboards.  
 Worked on rabbitMQ and event driven.
   - Helped everyone else with their services/tasks.
 - **Mathias:**
-  - **Responsibility:** Frontend, RuneScape Service, Friend Service, Live Search Service, general overview.
+  - **Responsibility:** Frontend, RuneScape Service, Friend Service, general overview.
   - **Contributions:** Implemented most of the necessary frontend for our application. Worked on Runescape service and friend service, and also adjusted services as needed for correct system flow/architecture.
 Due to having control of frontend, had a good overview of everyone else's work / services.
   - Helped everyone else with their services/tasks.
 - **Borse:**
-  - **Responsibility:** Search Service, Communication Service, Websocket, Live Search Service, Documentation/Theory.
-  - **Contributions:** Implemented Search Service, Communication Service and Live Search service. Added initial websocket config for chats/messages. Worked on rabbitMQ and event driven.
+  - **Responsibility:** Search Service, Communication Service, Live Search Service, Documentation.
+  - **Contributions:** Implemented Search Service, Communication Service and Live Search service. Added websocket config for chats/messages. Worked on rabbitMQ and event driven.
   - Helped everyone else with their services/tasks. 
 - **Ernad:**
-  - **Responsibility:** Profile Service, Friend Service, Logging.
-  - **Contributions:** Implemented user and profile service. Assisted Maiwand on docker setup and config. Centralized logging with docker.
+  - **Responsibility:** Profile Service, User Service, Logging.
+  - **Contributions:** Implemented user and profile service. Assisted Maiwand on docker setup and config. Centralized logging with docker. Added algorithm to matching in Live Search Service.
   - Helped everyone else with their services/tasks.
 - **Maiwand:**
   - **Responsibility:** Docker, Cleanup, General assisting others.
@@ -483,9 +504,15 @@ Due to having control of frontend, had a good overview of everyone else's work /
   - Helped everyone else with their services/tasks.
 
 
-## **__8. Relevant-Endpoints__**
+## **__7. Relevant-Endpoints__**
 If you would like to test some functionality through Postman instead of our frontend, we have listed some relevant endpoints below.
 These are just some of the endpoints, and we recommend you to look at the code to see all the endpoints.
+
+
+All these endpoints should be run through the gateway on localhost:8080/**
+
+`Example: GET localhost:8080/user/api/users/all`
+
 
 - **User Service:**
     - **POST /user/api/users/:** Register a new user. ** username, email, password json object**
