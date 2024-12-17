@@ -169,7 +169,7 @@ With this we have created labels that group different parts of our project/servi
 ## **__3. User Stories and Functionality__**
 Image of user stories from Arbeidskrav:
 
-![Screenshot of user stories submitted in arbeidskrav](images/User Stories.jpg)
+![Screenshot of user stories submitted in arbeidskrav](images/User-Stories.jpg)
 
 - [x]  **Story 1: As a user, I want to find people to play with.**
 - [x]  **Story 2: As a user, I want to be able to see ones own and other people's profiles.**
@@ -339,7 +339,7 @@ Relevant Endpoints: Link to section on some endpoints: [Link Text](#Relevant-End
 
 ## **__4. Project Architecture__**
 
-![Screenshot of user stories submitted in arbeidskrav](Microservices Architecture.png)
+![Screenshot of user stories submitted in arbeidskrav](images/Microservices-Architecture.png)
 
 **Architecture overview:**
 
