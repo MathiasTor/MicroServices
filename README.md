@@ -55,7 +55,7 @@ Replace `<project-directory>` with the path of the folder created by cloning.
 ---
 ***2. Alternatively, navigate to the root directory of each service and run:***
 ```
-mvn clean install -DSkipTests
+mvn clean install -DskipTests
 ```  
 
 ### **__Option 1: Container/Docker build and run__**
