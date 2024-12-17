@@ -90,6 +90,7 @@ public class PlayPalUserController {
             PlayPalUser user = playPalUserService.loginUser(userDTO.getUsername(), userDTO.getPassword());
 
             // Return the user object directly (password excluded)
+            log.info("User logged in: " + user.getUsername());
             return ResponseEntity.ok(user);
 
         } catch (RuntimeException ex) {

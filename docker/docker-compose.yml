@@ -54,7 +54,7 @@ services:
 
   # Profile Service
   profile-service:
-    container_name: profile
+    #container_name: profile
     image: profile-service:1.0
     ports:
       - "3001:3001"
@@ -72,7 +72,7 @@ services:
 
   # Communication Service
   communication-service:
-    container_name: communication
+    #container_name: communication
     image: communication-service:1.0
     ports:
       - "3002:3002"
@@ -89,7 +89,7 @@ services:
 
   # Friend Service
   friend-service:
-    container_name: friend
+    #container_name: friend
     image: friend-service:1.0
     ports:
       - "3003:3003"
@@ -107,7 +107,7 @@ services:
 
   # Group Service
   group-service:
-    container_name: group
+    #container_name: group
     image: group-service:1.0
     ports:
       - "3005:3005"
@@ -124,7 +124,7 @@ services:
 
   # Leaderboard Service
   leaderboard-service:
-    container_name: leaderboard
+    #container_name: leaderboard
     image: leaderboard-service:1.0
     ports:
       - "3012:3012"
@@ -142,7 +142,7 @@ services:
 
   # Runescape Service
   runescape-service:
-    container_name: runescape
+    #container_name: runescape
     image: runescape-service:1.0
     ports:
       - "3006:3006"
@@ -159,7 +159,7 @@ services:
 
   # Search Service
   search-service:
-    container_name: search
+    #container_name: search
     image: search-service:1.0
     ports:
       - "3007:3007"
@@ -176,7 +176,7 @@ services:
 
   # Livesearch Service
   livesearch-service:
-    container_name: livesearch
+    #container_name: livesearch
     image: livesearch-service:1.0
     ports:
       - "3040:3040"
@@ -194,7 +194,7 @@ services:
 
   # User Service
   user-service:
-    container_name: user
+    #container_name: user
     image: user-service:1.0
     ports:
       - "3008:3008"
