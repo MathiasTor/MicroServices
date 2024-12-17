@@ -99,19 +99,6 @@ public class GroupService {
         return group.getUserIds();
     }
 
-    public Long getUserIdByUsername(String username) {
-        String url = userServiceUrl + "/users/" + username;
-        ResponseEntity<UserDTO> response = restTemplate.getForEntity(url, UserDTO.class);
-
-        if (response.getStatusCode() == HttpStatus.OK) {
-            UserDTO user = response.getBody();
-            return user != null ? user.getUserId() : null;
-        }
-
-        throw new RuntimeException("Failed to fetch user ID for username: " + username);
-    }
-
-
     public List<Group> getGroupsForUser(Long userId) {
         return groupRepository.findAllByUserIdsContains(userId);
     }
