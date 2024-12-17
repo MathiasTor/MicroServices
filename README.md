@@ -49,7 +49,6 @@ Replace `<project-directory>` with the name of the folder created by cloning.
 ```
 mvn clean install
 ```  
-*** Note if build fails when running mvn clean install in each service, the reason might be that it is the tests that are making it fail. then try mvn clean install -DskipTests and it should build
 
 ### **__Option 1: Container/Docker build and run__**
 
