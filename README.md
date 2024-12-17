@@ -497,6 +497,12 @@ These are just some of the endpoints, and we recommend you to look at the code t
    - **POST /friend/api/friends/add-friend/{userId}/{friendId} :** Accept a friend request.
    - **POST /friend/api/friends/block/{userId}/{friendId} :** Block a user.
    - **GET /friend/api/friends/get-friends/{userId} :** Get all friends for a user.
+- **Livesearch Service:**
+   - **POST /livesearch/api/live/new/{userID} :** Creates a livesearch for the user.
+   - **GET /livesearch/api/live/all :** Se all the logs for all the users that has created entries.
+   - **PUT /livesearch/api/live/stop/{userID} :** Stops the search.
+   - **GET /livesearch/api/live/status/{userID} :** Checks if the user is online.
+   - **GET /livesearch/api/live/unread-match/{userID} :** Checks if you have a unread notification.
 - **Gateway Service:**
     - **All endpoints:** Routes incoming requests to the correct microservices.
 - **Frontend:**
