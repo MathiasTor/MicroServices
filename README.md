@@ -5,7 +5,7 @@
 - Candidate number: 55
 - Candidate number: 38
 - Candidate number: 58
-- Candidate number: Maiwand
+- Candidate number: 25
 
 ## **__1. Introduction and Overview__**
 **___PlayPal___** is a groundbreaking social group-finding application designed to bring gamers together from all around the world. Whether you're looking for teammates to tackle challenging in-game content, casual friends to share fun moments with, or competitive partners to climb the ranks, PlayPal offers the tools to connect you with the perfect match.
@@ -169,7 +169,7 @@ With this we have created labels that group different parts of our project/servi
 ## **__3. User Stories and Functionality__**
 Image of user stories from Arbeidskrav:
 
-![Screenshot of user stories submitted in arbeidskrav](User Stories.jpg)
+![Screenshot of user stories submitted in arbeidskrav](images/User Stories.jpg)
 
 - [x]  **Story 1: As a user, I want to find people to play with.**
 - [x]  **Story 2: As a user, I want to be able to see ones own and other people's profiles.**
