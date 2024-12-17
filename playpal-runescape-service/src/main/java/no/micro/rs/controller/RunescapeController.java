@@ -21,6 +21,12 @@ public class RunescapeController {
         runescapeService.fetchRunescapeStats(runescapeName);
     }
 
+    //Fetch raids kill count
+    @GetMapping("/fetch-raidskc/{runescapeName}")
+    public void fetchRaidsKc(@PathVariable String runescapeName) {
+        runescapeService.getRaidsKC(runescapeName);
+    }
+
     //Link user to runescape character
     @PostMapping("/link-user/{userid}/{runescapeName}")
     public void linkUserToRSChar(@PathVariable Long userid, @PathVariable String runescapeName) {
@@ -50,5 +56,11 @@ public class RunescapeController {
     @GetMapping("/runescape-chars")
     public List<RunescapeChar> getAllRunescapeChars() {
         return runescapeService.getAllRunescapeChars();
+    }
+
+    //Get the linked runescape username for a userId
+    @GetMapping("/get-linked-username/{userid}")
+    public String getLinkedUsername(@PathVariable Long userid) {
+        return runescapeService.getLinkedUsername(userid);
     }
 }

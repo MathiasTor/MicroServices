@@ -164,8 +164,8 @@ public class RunescapeService {
                         }
                     }
                 }
-            runescapeRepository.save(runescapeChar);
             getRaidsKC(runescapeName);
+            runescapeRepository.save(runescapeChar);
         } catch (Exception e) {
             logger.error("Error fetching RuneScape stats: " + e.getMessage());
         }
@@ -199,7 +199,7 @@ public class RunescapeService {
                 return;
             }
 
-            if(runescapeChar.getRunescapeName() != runescapeName) {
+            if (!runescapeChar.getRunescapeName().equals(runescapeName)) {
                 System.err.println("Mismatch usernames - aborting.");
                 return;
             }
@@ -230,6 +230,7 @@ public class RunescapeService {
                     switch (bossName) {
                         case "chambers of xeric":
                             runescapeChar.setCoxKC(killCount);
+                            log.info("Chambers of Xeric KC: " + killCount);
                             break;
                         case "theatre of blood":
                             runescapeChar.setTobKC(killCount);
@@ -264,5 +265,14 @@ public class RunescapeService {
 
     public boolean isLinked(Long userid) {
         return runescapeRepository.findByUserId(userid) != null;
+    }
+
+    public String getLinkedUsername(Long userid) {
+        RunescapeChar runescapeChar = runescapeRepository.findByUserId(userid);
+        if(runescapeChar != null) {
+            return runescapeChar.getRunescapeName();
+        } else {
+            return null;
+        }
     }
 }

@@ -143,12 +143,16 @@ const ProfileComponent = () => {
         try {
             const response = await axios.post(
                 `http://localhost:8080/profile/api/profiles/generate-ai-picture/${userId}`,
-                { prompt: aiPictureInput }
+                { text: aiPictureInput }
             );
+
+            const localImagePath = response.data;
+            console.log(localImagePath);
             setProfileData((prevData) => ({
                 ...prevData,
-                profilePictureUrl: response.data.image_urls[0],
+                profilePictureUrl: localImagePath,
             }));
+            console.log(profileData.profilePictureUrl);
             setIsLoading(false);
             window.location.reload();
         } catch (error) {
@@ -157,6 +161,7 @@ const ProfileComponent = () => {
             setIsLoading(false);
         }
     };
+
 
     const handleVote = async (voteType) => {
         const loggedInUserId = Cookies.get("userid");
@@ -187,6 +192,17 @@ const ProfileComponent = () => {
     const handleEditToggle = () => {
         setIsEditing((prev) => !prev);
     };
+
+    const fetchStats = async () => {
+        try{
+            const response = await axios.get(`http://localhost:8080/runescape/api/runescape/get-linked-username/${userId}`);
+            const username = response.data;
+            await axios.get(`http://localhost:8080/runescape/api/runescape/fetch-stats/${username}`);
+            window.location.reload();
+        }catch (error) {
+            console.error("Failed to fetch stats", error);
+        }
+    }
 
     return (
         <div>
@@ -236,7 +252,7 @@ const ProfileComponent = () => {
                         {isLoading ? (
                             <div className="loading-indicator">Loading...</div>
                         ) : (
-                            <img src={profileData?.profilePictureUrl || "/default-profile.png"} alt="Profile" />
+                            <img src={`http://localhost:8080/profile/${profileData?.profilePictureUrl}` || "/default-profile.png"} alt="Profile" />
                         )}
                         {isOwnProfile && previewImage && (
                             <img src={previewImage} alt="Preview" className="preview-image" />
@@ -295,6 +311,7 @@ const ProfileComponent = () => {
                         </button>
                     </div>
                 )}
+                <button onClick={fetchStats} className="fetch-stats-button">Update Stats</button>
                 {runescapeStats && (
                     <div className="stats-container">
                         <div className="runescape-stats">
