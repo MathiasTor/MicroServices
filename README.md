@@ -348,7 +348,10 @@ RuneScape Username to Link with: erntt
 Now that you've linked the profiles. You can go to the leaderboard tab, and see the leaderboard. If it hasn't updated yet, wait for the 30-second update timer. 
 This displays the overall raid completions of each user, and also has a weekly leaderboard, that updates monday 12 o'clock every week, to see who won the most raid completions that week.
 
-_As you just started, the weekly leaderboard doesn't have any raid completions, but we attached some images of functioning weekly leaderboard._
+_As you just started, the weekly leaderboard doesn't have any raid completions, but here is an images of functioning weekly leaderboard:._  
+![Screenshot of weekly leaderboard](images/Weekly-Leaderboard.png)
+
+
 
 if you click the profiles of other users again, from the post page, you should now see their runescape stats and raid completions on their profile.
 
